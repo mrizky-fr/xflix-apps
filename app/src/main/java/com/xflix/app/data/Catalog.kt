@@ -9,9 +9,9 @@ object Catalog {
     private fun ep(n: Int, name: String, min: Int, synopsis: String, @DrawableRes still: Int) =
         Episode(n, name, min, synopsis, still)
 
-    // Durasi belum diketahui
-    private fun yt(n: Int, name: String, videoId: String, @DrawableRes still: Int) =
-        Episode(n, name, 0, "", still, youtubeId = videoId)
+    // Durasi 0 berarti belum diketahui
+    private fun yt(n: Int, name: String, videoId: String, @DrawableRes still: Int, minutes: Int = 0) =
+        Episode(n, name, minutes, "", still, youtubeId = videoId)
 
     // Satu video Kamar Film, satu serial
     private fun kamarFilm(
@@ -128,6 +128,25 @@ object Catalog {
                 ),
             ),
         ),
+        Title(
+            id = "pwk_podcast", name = "PWK Podcast", kind = Kind.Series, year = 2026, rating = "18+",
+            genres = setOf(Genre.Comedy),
+            moods = listOf("Podcast", "Komedi", "Praz Teguh"),
+            synopsis = "Podcast Warung Kopi dari kanal HAS Creative, diputar langsung dari YouTube.",
+            cast = emptyList(), creator = "HAS Creative",
+            poster = R.drawable.poster_pwk_podcast, backdrop = R.drawable.backdrop_pwk_podcast,
+            tint = Color(0xFF2D5A27), style = TitleStyle.Condensed,
+            newEpisodes = true,
+            seasons = listOf(
+                Season(
+                    1, listOf(
+                        yt(1, "JARANG TAMPIL BERSAMA, HUBUNGAN COKI MUSLIM DAN HABIB JA'FAR RENGGANG?!", "lqHDo13Ocl0", R.drawable.still_pwk_podcast_1, minutes = 77),
+                        yt(2, "KLARIFIKASI DEDE INOEN KERACUNAN T4I KUDA, SAMPE DI INFUS DI RUMAH SAKIT!!", "OrZUWnILIps", R.drawable.still_pwk_podcast_2, minutes = 69),
+                        yt(3, "AYAH BANGKRUT & JADI TULANG PUNGGUNG, PESULAP MERAH GAK SEMPET WUJUDIN CITA-CITA JADI SPIDERMAN", "UioVRDFab3c", R.drawable.still_pwk_podcast_3, minutes = 79),
+                    )
+                ),
+            ),
+        ),
         kamarFilm(
             id = "kf_reinkarnasi", name = "Teori Reinkarnasi", videoId = "RMaYd-hYgJ0",
             episode = "SECARA SAINS APAKAH TEORI REINKARNASI BISA DIBUKTIKAN?",
@@ -236,6 +255,7 @@ object Catalog {
     val continueWatching = emptyList<WatchProgress>()
 
     val notices = listOf(
+        Notice("pwk_podcast", "Baru Ditambahkan", "PWK Podcast, 3 episode bareng Coki & Tretan, Dede Inoen, dan Pesulap Merah.", "Hari ini"),
         Notice("kf_reinkarnasi", "Baru Ditambahkan", "10 video terbaru Kamar Film sudah bisa ditonton online.", "Hari ini"),
         Notice("sains_rumah_editor", "Baru Ditambahkan", "Sains Rumah Editor, 4 episode sudah tersedia.", "Hari ini"),
         Notice("sekolah_normal", "Baru Ditambahkan", "Sekolah Normal, 4 episode sudah tersedia.", "Hari ini"),
