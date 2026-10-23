@@ -564,7 +564,12 @@ private fun EpisodeRow(
             }
             Spacer(Modifier.width(Space.m))
             Column(Modifier.weight(1f)) {
-                Text("${episode.number}. ${episode.name}", style = XType.Label.copy(fontSize = 14.sp), maxLines = 2)
+                Text(
+                    "${episode.number}. ${episode.name}",
+                    style = XType.Label.copy(fontSize = 14.sp),
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                )
                 Spacer(Modifier.height(2.dp))
                 Text(stringResource(R.string.runtime_m, episode.minutes), style = XType.Caption)
             }

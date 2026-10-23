@@ -74,6 +74,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -753,7 +754,7 @@ private fun EpisodePanel(
                         XImage(ep.still, Modifier.fillMaxSize(), displayWidth = 176.dp)
                     }
                     Spacer(Modifier.height(6.dp))
-                    Text("${ep.number}. ${ep.name}", style = XType.Label, maxLines = 1)
+                    Text("${ep.number}. ${ep.name}", style = XType.Label, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Text(stringResource(R.string.runtime_m, ep.minutes), style = XType.Caption)
                 }
             }

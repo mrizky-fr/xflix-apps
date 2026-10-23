@@ -30,6 +30,34 @@ object Catalog {
                 ),
             ),
         ),
+        Title(
+            id = "sains_rumah_editor", name = "Sains Rumah Editor", kind = Kind.Series, year = 2026, rating = "SU",
+            genres = setOf(Genre.Documentary),
+            moods = listOf("Sains", "Edukasi", "Matematika"),
+            synopsis = "Serial sains dari Rumah Editor.",
+            cast = emptyList(), creator = "Rumah Editor",
+            poster = R.drawable.poster_sains_rumah_editor, backdrop = R.drawable.backdrop_sains_rumah_editor,
+            tint = Color(0xFF173A7A), style = TitleStyle.Serif,
+            top10 = 2,
+            seasons = listOf(
+                Season(
+                    1, listOf(
+                        ep(
+                            1, "MENGAPA PARA ILMUWAN MEMPERCAYAI SESUATU \"YANG TAK TERLIHAT\"??", 19,
+                            "Atom-atom yang katanya adalah materi penyusun alam ini ternyata hanyalah 5% dari seluruh materi. Sisanya adalah materi \"tak kasatmata\" yang disebut para ilmuwan \"materi gelap\". Tapi bagaimana mereka yakin materi ini ada?",
+                            R.drawable.still_sains_rumah_editor_1,
+                        ),
+                        ep(
+                            2, "TIDAK TERJAWAB SELAMA RIBUAN TAHUN!! INILAH ALASAN MENGAPA SARANG LEBAH BERBENTUK HEKSAGONAL!!", 17,
+                            "Mengapa sarang lebah berbentuk heksagonal? Ternyata alasannya sangat matematis, dan baru dibuktikan seorang matematikawan pada tahun 1999 setelah ribuan tahun tidak terjawab.",
+                            R.drawable.still_sains_rumah_editor_2,
+                        ),
+                        ep(3, "ADA KEBENARAN YANG TIDAK BISA DIBUKTIKAN SECARA LOGIKA!!", 24, "", R.drawable.still_sains_rumah_editor_3),
+                        ep(4, "1000 TAHUN YANG LALU ILMUWAN INI MENGUKUR BESARNYA BUMI, HASILNYA…", 21, "", R.drawable.still_sains_rumah_editor_4),
+                    )
+                ),
+            ),
+        ),
     )
 
     private val byId = titles.associateBy { it.id }
@@ -68,6 +96,7 @@ object Catalog {
     val continueWatching = emptyList<WatchProgress>()
 
     val notices = listOf(
+        Notice("sains_rumah_editor", "Baru Ditambahkan", "Sains Rumah Editor, 4 episode sudah tersedia.", "Hari ini"),
         Notice("sekolah_normal", "Baru Ditambahkan", "Sekolah Normal, 4 episode sudah tersedia.", "Hari ini"),
     )
 }
