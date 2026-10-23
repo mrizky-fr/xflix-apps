@@ -50,7 +50,7 @@ import com.xflix.app.data.Title
 import com.xflix.app.data.WatchProgress
 import com.xflix.app.ui.icons.XIcons
 import com.xflix.app.ui.motion.sharedTitle
-import com.xflix.app.ui.theme.BigShoulders
+import com.xflix.app.ui.theme.Inter
 import com.xflix.app.ui.theme.Dimens
 import com.xflix.app.ui.theme.Motion
 import com.xflix.app.ui.theme.Space
@@ -105,8 +105,8 @@ fun Top10Badge(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Text("TOP", style = TextStyle(fontSize = 6.sp, lineHeight = 6.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.3.sp, color = Color.White))
-        Text("10", style = TextStyle(fontFamily = BigShoulders, fontWeight = FontWeight.Black, fontSize = 12.sp, lineHeight = 11.sp, color = Color.White))
+        Text("TOP", style = TextStyle(fontFamily = Inter, fontSize = 6.sp, lineHeight = 6.sp, fontWeight = FontWeight.Bold, letterSpacing = 0.3.sp, color = Color.White))
+        Text("10", style = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Black, fontSize = 10.sp, lineHeight = 11.sp, letterSpacing = (-0.3).sp, color = Color.White))
     }
 }
 
@@ -127,11 +127,11 @@ fun Top10Card(rank: Int, title: Title, onClick: () -> Unit, sharedKey: String?) 
     val posterHeight = Dimens.PosterWidth * 1.5f
     Box(Modifier.width(if (rank >= 10) 172.dp else 146.dp).height(posterHeight)) {
         val numeral = TextStyle(
-            fontFamily = BigShoulders,
+            fontFamily = Inter,
             fontWeight = FontWeight.Black,
-            fontSize = 150.sp,
-            lineHeight = 120.sp,
-            letterSpacing = (-6).sp,
+            fontSize = 128.sp,
+            lineHeight = 110.sp,
+            letterSpacing = (-8).sp,
         )
         val placement = Modifier
             .align(Alignment.BottomStart)

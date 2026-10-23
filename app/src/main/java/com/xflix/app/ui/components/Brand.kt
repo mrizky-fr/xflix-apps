@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.xflix.app.ui.theme.BigShoulders
+import com.xflix.app.ui.theme.Inter
 import com.xflix.app.ui.theme.XColors
 
 // Proporsi relatif tinggi X
@@ -103,7 +103,7 @@ fun XflixWordmark(modifier: Modifier = Modifier, height: Dp = 26.dp, color: Colo
     val letters = "XFLIX"
     val layouts = remember(height, color, density) {
         val style = TextStyle(
-            fontFamily = BigShoulders,
+            fontFamily = Inter,
             fontWeight = FontWeight.Black,
             fontSize = with(density) { (height * 1.18f).toSp() },
             color = color,

@@ -3,33 +3,22 @@ package com.xflix.app.ui.theme
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.sp
 import com.xflix.app.R
 
-val InstrumentSans = FontFamily(
-    Font(R.font.instrument_sans_regular, FontWeight.Normal),
-    Font(R.font.instrument_sans_medium, FontWeight.Medium),
-    Font(R.font.instrument_sans_semibold, FontWeight.SemiBold),
-    Font(R.font.instrument_sans_bold, FontWeight.Bold),
-)
-
-// Wordmark, angka, judul kondensed
-val BigShoulders = FontFamily(
-    Font(R.font.big_shoulders_bold, FontWeight.Bold),
-    Font(R.font.big_shoulders_black, FontWeight.Black),
-)
-
-val DmSerif = FontFamily(
-    Font(R.font.dm_serif_display, FontWeight.Normal),
-    Font(R.font.dm_serif_display_italic, FontWeight.Normal, FontStyle.Italic),
+val Inter = FontFamily(
+    Font(R.font.inter_regular, FontWeight.Normal),
+    Font(R.font.inter_medium, FontWeight.Medium),
+    Font(R.font.inter_semibold, FontWeight.SemiBold),
+    Font(R.font.inter_bold, FontWeight.Bold),
+    Font(R.font.inter_black, FontWeight.Black),
 )
 
 object XType {
     private val base = TextStyle(
-        fontFamily = InstrumentSans,
+        fontFamily = Inter,
         color = XColors.TextPrimary,
         lineHeightStyle = LineHeightStyle(
             alignment = LineHeightStyle.Alignment.Center,

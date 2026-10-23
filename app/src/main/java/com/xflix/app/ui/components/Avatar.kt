@@ -28,9 +28,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import com.xflix.app.data.Face
 import com.xflix.app.data.Profile
-import com.xflix.app.ui.theme.BigShoulders
+import com.xflix.app.ui.theme.Inter
 
 private val KidsLetters = listOf(Color(0xFFFF5A5F), Color(0xFFFFC23D), Color(0xFF4CD07D), Color(0xFF3FA9FF))
 
@@ -55,14 +56,14 @@ fun ProfileAvatar(profile: Profile, modifier: Modifier = Modifier, corner: Dp = 
 @Composable
 private fun KidsLabel() {
     BoxWithConstraints(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        val size = with(LocalDensity.current) { (maxWidth * 0.36f).toSp() }
+        val size = with(LocalDensity.current) { (maxWidth * 0.28f).toSp() }
         Text(
             buildAnnotatedString {
                 "anak".forEachIndexed { i, c ->
                     withStyle(SpanStyle(color = KidsLetters[i % KidsLetters.size])) { append(c) }
                 }
             },
-            style = TextStyle(fontFamily = BigShoulders, fontWeight = FontWeight.Black, fontSize = size),
+            style = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Black, fontSize = size, letterSpacing = (-0.03).em),
         )
     }
 }

@@ -63,7 +63,7 @@ import com.xflix.app.ui.components.TitleArt
 import com.xflix.app.ui.components.XImage
 import com.xflix.app.ui.components.XMark
 import com.xflix.app.ui.icons.XIcons
-import com.xflix.app.ui.theme.BigShoulders
+import com.xflix.app.ui.theme.Inter
 import com.xflix.app.ui.theme.Dimens
 import com.xflix.app.ui.theme.Motion
 import com.xflix.app.ui.theme.Space
@@ -218,12 +218,12 @@ private fun NewHotItem(
                     )
                     Text(
                         title.premiere.dayOfMonth.toString(),
-                        style = TextStyle(fontFamily = BigShoulders, fontWeight = FontWeight.Black, fontSize = 32.sp, lineHeight = 32.sp, color = Color.White),
+                        style = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Black, fontSize = 28.sp, lineHeight = 32.sp, letterSpacing = (-0.8).sp, color = Color.White),
                     )
                 }
                 entry.rank != null -> Text(
                     entry.rank.toString(),
-                    style = TextStyle(fontFamily = BigShoulders, fontWeight = FontWeight.Black, fontSize = 40.sp, lineHeight = 40.sp, color = Color.White),
+                    style = TextStyle(fontFamily = Inter, fontWeight = FontWeight.Black, fontSize = 34.sp, lineHeight = 40.sp, letterSpacing = (-1).sp, color = Color.White),
                 )
             }
         }
