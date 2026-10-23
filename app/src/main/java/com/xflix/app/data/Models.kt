@@ -22,6 +22,7 @@ enum class Genre(@param:StringRes val label: Int) {
     Mystery(R.string.genre_mystery),
     Drama(R.string.genre_drama),
     Crime(R.string.genre_crime),
+    Comedy(R.string.genre_comedy),
 }
 
 @Immutable

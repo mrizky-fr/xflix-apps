@@ -33,13 +33,10 @@ class XflixViewModel : ViewModel() {
 
     val myList = mutableStateListOf<String>()
     val reminders = mutableStateListOf<String>()
-    val liked = mutableStateListOf("jarak", "rimba", "penjaga_mercusuar", "kota_tanpa_tidur")
+    val liked = mutableStateListOf("jarak", "penjaga_mercusuar")
 
     // Kunci: id atau id/sX/eY
     val downloads = mutableStateMapOf(
-        "kota_tanpa_tidur/s1/e1" to 1f,
-        "kota_tanpa_tidur/s1/e2" to 1f,
-        "kota_tanpa_tidur/s1/e3" to 1f,
         "jarak" to 1f,
     )
     private val downloadJobs = mutableMapOf<String, Job>()

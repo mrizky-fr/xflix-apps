@@ -116,6 +116,7 @@
     <string name="genre_mystery">Misteri</string>
     <string name="genre_drama">Drama</string>
     <string name="genre_crime">Kriminal</string>
+    <string name="genre_comedy">Komedi</string>
 
     <!-- Detail -->
     <string name="runtime_hm">%1$dj %2$dm</string>
@@ -181,6 +182,13 @@
     <string name="player_rewind">Mundur 10 detik</string>
     <string name="player_forward">Maju 10 detik</string>
     <string name="player_seconds">%1$d detik</string>
+    <string name="player_missing_title">Video belum ada di HP</string>
+    <string name="player_missing_body">Salin file %1$s ke folder %2$s</string>
+    <string name="player_failed_title">Video tidak bisa diputar</string>
+    <string name="player_failed_body">File %1$s rusak atau tidak bisa dibaca. Coba salin ulang ke folder %2$s</string>
+    <string name="player_permission_title">Izinkan akses video</string>
+    <string name="player_permission_body">Xflix perlu izin membaca video di folder %1$s</string>
+    <string name="player_permission_action">Izinkan</string>
 
     <!-- Fitur yang belum tersambung -->
     <string name="toast_cast">Transmisi belum tersedia di versi demo</string>

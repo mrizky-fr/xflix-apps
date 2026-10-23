@@ -275,7 +275,7 @@ private fun DownloadIllustration() {
         animationSpec = infiniteRepeatable(tween(2400, easing = FastOutSlowInEasing), RepeatMode.Reverse),
         label = "float",
     )
-    val title = remember { Catalog.title("kabut") }
+    val title = remember { Catalog.title("sekolah_normal") }
     val progress = ((t - 0.08f) / 0.54f).coerceIn(0f, 1f)
     val check = ((t - 0.66f) / 0.1f).coerceIn(0f, 1f)
     Box(

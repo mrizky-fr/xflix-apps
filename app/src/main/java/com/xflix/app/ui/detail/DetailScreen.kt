@@ -374,12 +374,14 @@ private fun DetailInfo(title: Title, vm: XflixViewModel, onPlay: () -> Unit, onS
                 .clickable { expanded = !expanded },
         )
         Spacer(Modifier.height(Space.s))
-        Text(
-            stringResource(R.string.label_cast, title.cast.joinToString(", ")),
-            style = XType.Caption.copy(fontSize = 12.sp, lineHeight = 16.sp),
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
+        if (title.cast.isNotEmpty()) {
+            Text(
+                stringResource(R.string.label_cast, title.cast.joinToString(", ")),
+                style = XType.Caption.copy(fontSize = 12.sp, lineHeight = 16.sp),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
         Text(
             stringResource(if (isSeries) R.string.label_creator else R.string.label_director, title.creator),
             style = XType.Caption.copy(fontSize = 12.sp, lineHeight = 16.sp),
@@ -578,7 +580,9 @@ private fun EpisodeRow(
                 }
             }
         }
-        Spacer(Modifier.height(Space.s))
-        Text(episode.synopsis, style = XType.BodySmall, maxLines = 3, overflow = TextOverflow.Ellipsis)
+        if (episode.synopsis.isNotBlank()) {
+            Spacer(Modifier.height(Space.s))
+            Text(episode.synopsis, style = XType.BodySmall, maxLines = 3, overflow = TextOverflow.Ellipsis)
+        }
     }
 }

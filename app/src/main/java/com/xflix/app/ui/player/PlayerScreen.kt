@@ -3,12 +3,16 @@ package com.xflix.app.ui.player
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.net.Uri
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import android.view.WindowManager
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -69,18 +73,30 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 import com.xflix.app.R
 import com.xflix.app.data.Catalog
 import com.xflix.app.data.Episode
 import com.xflix.app.data.Kind
+import com.xflix.app.data.LocalMedia
 import com.xflix.app.ui.components.BarIcon
 import com.xflix.app.ui.components.LocalToaster
+import com.xflix.app.ui.components.XButton
 import com.xflix.app.ui.components.XImage
 import com.xflix.app.ui.icons.XIcons
 import com.xflix.app.ui.theme.Motion
@@ -97,7 +113,7 @@ private const val SeekSeconds = 10
 
 private data class SeekFlash(val forward: Boolean, val id: Long)
 
-/** Player tiruan tanpa video */
+/** Pemutar video dari penyimpanan HP */
 @Composable
 fun PlayerScreen(
     id: String,
@@ -105,6 +121,7 @@ fun PlayerScreen(
     startEpisode: Int,
     onBack: () -> Unit,
 ) {
+    val context = LocalContext.current
     val title = remember(id) { Catalog.title(id) }
     // Ganti episode tanpa navigasi
     var season by rememberSaveable { mutableIntStateOf(startSeason) }
@@ -112,17 +129,32 @@ fun PlayerScreen(
     val isSeries = title.kind == Kind.Series
     val currentEpisode = title.seasons.getOrNull(season - 1)?.episodes?.getOrNull(episode - 1)
     val nextEpisode = title.seasons.getOrNull(season - 1)?.episodes?.getOrNull(episode)
-    val total = ((currentEpisode?.minutes ?: title.minutes).coerceAtLeast(1) * 60).toFloat()
+    val estimate = ((currentEpisode?.minutes ?: title.minutes).coerceAtLeast(1) * 60).toFloat()
     val resumeAt = Catalog.continueWatching
         .firstOrNull { it.titleId == id && (!isSeries || (it.season == season && it.episode == episode)) }
         ?.fraction ?: 0f
+    var granted by remember { mutableStateOf(LocalMedia.hasPermission(context)) }
+    var asked by rememberSaveable { mutableStateOf(false) }
+    val askPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
+        granted = ok
+        asked = true
+    }
+    LaunchedEffect(Unit) { if (!granted) askPermission.launch(LocalMedia.permission) }
+    val file = remember(id, season, episode, granted) {
+        if (granted) LocalMedia.find(context, title, season, episode) else null
+    }
     val toaster = LocalToaster.current
     val audioMessage = stringResource(R.string.toast_audio)
 
     ImmersiveLandscape()
 
+    val exo = remember { ExoPlayer.Builder(context).build() }
     var playing by rememberSaveable { mutableStateOf(true) }
-    var position by rememberSaveable(id, season, episode) { mutableFloatStateOf(total * resumeAt) }
+    var position by rememberSaveable(id, season, episode) { mutableFloatStateOf(estimate * resumeAt) }
+    var total by remember { mutableFloatStateOf(estimate) }
+    var buffered by remember { mutableFloatStateOf(0f) }
+    var firstFrame by remember { mutableStateOf(false) }
+    var failed by remember { mutableStateOf(false) }
     var controls by remember { mutableStateOf(true) }
     var poke by remember { mutableIntStateOf(0) }
     var locked by rememberSaveable { mutableStateOf(false) }
@@ -132,20 +164,79 @@ fun PlayerScreen(
     var episodesOpen by remember { mutableStateOf(false) }
     var flash by remember { mutableStateOf<SeekFlash?>(null) }
 
+    DisposableEffect(exo) {
+        val listener = object : Player.Listener {
+            override fun onPlaybackStateChanged(state: Int) {
+                if (state == Player.STATE_READY && exo.duration > 0) total = exo.duration / 1000f
+                if (state == Player.STATE_ENDED) playing = false
+            }
+
+            override fun onRenderedFirstFrame() {
+                firstFrame = true
+            }
+
+            override fun onPlayerError(error: PlaybackException) {
+                failed = true
+                playing = false
+            }
+        }
+        exo.addListener(listener)
+        onDispose {
+            exo.removeListener(listener)
+            exo.release()
+        }
+    }
+    // Muat episode aktif
+    LaunchedEffect(file) {
+        firstFrame = false
+        failed = false
+        total = estimate
+        buffered = 0f
+        if (file == null) {
+            exo.clearMediaItems()
+            return@LaunchedEffect
+        }
+        exo.setMediaItem(MediaItem.fromUri(Uri.fromFile(file)), (position * 1000).toLong())
+        exo.prepare()
+    }
+    LaunchedEffect(playing) { exo.playWhenReady = playing }
+    LaunchedEffect(speed) { exo.setPlaybackSpeed(Speeds[speed]) }
+    // Posisi mengikuti player
+    LaunchedEffect(file, scrubbing) {
+        while (file != null && !scrubbing) {
+            position = exo.currentPosition / 1000f
+            buffered = (exo.bufferedPosition / 1000f / total).coerceIn(0f, 1f)
+            delay(250)
+        }
+    }
+    // Jeda saat app ditinggal
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    DisposableEffect(lifecycle) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_PAUSE) playing = false
+            // Bisa berubah dari Pengaturan
+            if (event == Lifecycle.Event.ON_RESUME) granted = LocalMedia.hasPermission(context)
+        }
+        lifecycle.addObserver(observer)
+        onDispose { lifecycle.removeObserver(observer) }
+    }
+
+    fun seekTo(seconds: Float) {
+        position = seconds.coerceIn(0f, total)
+        exo.seekTo((position * 1000).toLong())
+    }
+
     fun seek(forward: Boolean) {
-        position = (position + if (forward) SeekSeconds else -SeekSeconds).coerceIn(0f, total)
+        seekTo(position + if (forward) SeekSeconds else -SeekSeconds)
         flash = SeekFlash(forward, System.nanoTime())
         poke++
     }
 
-    // Jam putar tiruan
-    LaunchedEffect(playing, speed, scrubbing) {
-        while (playing && !scrubbing) {
-            delay(250)
-            position = (position + 0.25f * Speeds[speed]).coerceAtMost(total)
-            if (position >= total) playing = false
-        }
+    fun openEpisode(number: Int) {
+        episode = number
+        playing = true
     }
+
     // Kontrol hilang sendiri
     LaunchedEffect(controls, poke, playing, scrubbing, episodesOpen) {
         if (controls && playing && !scrubbing && !episodesOpen) {
@@ -166,14 +257,11 @@ fun PlayerScreen(
         }
     }
 
-    // Panning pelan selama diputar
-    val pan = remember { Animatable(0f) }
-    LaunchedEffect(playing) {
-        while (playing) {
-            pan.animateTo(if (pan.value < 0.5f) 1f else 0f, tween(9000, easing = LinearEasing))
-        }
-    }
-    val dim by animateFloatAsState(if (controls || episodesOpen) 0.5f else 0f, tween(Motion.Medium), label = "dim")
+    val dim by animateFloatAsState(
+        if (controls || episodesOpen || file == null || failed) 0.5f else 0f,
+        tween(Motion.Medium),
+        label = "dim",
+    )
 
     Box(
         Modifier
@@ -191,23 +279,31 @@ fun PlayerScreen(
                             }
                         }
                     },
-                    onDoubleTap = { offset -> if (!locked) seek(forward = offset.x > size.width / 2f) },
+                    onDoubleTap = { offset -> if (!locked && file != null) seek(forward = offset.x > size.width / 2f) },
                 )
             }
     ) {
-        XImage(
-            id = title.backdrop,
-            displayWidth = 900.dp,
-            eager = true,
-            placeholder = Color.Black,
-            modifier = Modifier
-                .fillMaxSize()
-                .graphicsLayer {
-                    scaleX = 1.08f
-                    scaleY = 1.08f
-                    translationX = (pan.value - 0.5f) * size.width * 0.05f
+        if (file != null) {
+            AndroidView(
+                factory = { ctx ->
+                    PlayerView(ctx).apply {
+                        useController = false
+                        player = exo
+                    }
                 },
-        )
+                onRelease = { it.player = null },
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+        if (!firstFrame) {
+            XImage(
+                id = title.backdrop,
+                displayWidth = 900.dp,
+                eager = true,
+                placeholder = Color.Black,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
         Box(
             Modifier
                 .fillMaxSize()
@@ -216,8 +312,41 @@ fun PlayerScreen(
 
         SeekIndicator(flash)
 
+        val path = LocalMedia.relativePath(title, season, episode)
+        when {
+            !granted -> PlayerNotice(
+                heading = stringResource(R.string.player_permission_title),
+                body = stringResource(R.string.player_permission_body, LocalMedia.FOLDER),
+                action = stringResource(R.string.player_permission_action),
+                onAction = {
+                    val activity = context.findActivity()
+                    // Ditolak permanen, buka Pengaturan
+                    val blocked = asked && activity != null &&
+                        !activity.shouldShowRequestPermissionRationale(LocalMedia.permission)
+                    if (blocked) {
+                        context.startActivity(
+                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
+                        )
+                    } else {
+                        askPermission.launch(LocalMedia.permission)
+                    }
+                },
+                onBack = onBack,
+            )
+            file == null -> PlayerNotice(
+                heading = stringResource(R.string.player_missing_title),
+                body = stringResource(R.string.player_missing_body, path, LocalMedia.FOLDER),
+                onBack = onBack,
+            )
+            failed -> PlayerNotice(
+                heading = stringResource(R.string.player_failed_title),
+                body = stringResource(R.string.player_failed_body, path, LocalMedia.FOLDER),
+                onBack = onBack,
+            )
+        }
+
         AnimatedVisibility(
-            visible = controls && !locked && !episodesOpen,
+            visible = file != null && !failed && controls && !locked && !episodesOpen,
             enter = fadeIn(tween(Motion.Short)),
             exit = fadeOut(tween(Motion.Medium)),
         ) {
@@ -227,21 +356,26 @@ fun PlayerScreen(
                 playing = playing,
                 position = position,
                 total = total,
+                buffered = buffered,
                 speedLabel = stringResource(R.string.player_speed, speedLabel(Speeds[speed])),
                 isSeries = isSeries,
                 hasNext = nextEpisode != null,
                 onBack = onBack,
                 onTogglePlay = {
-                    if (position >= total) position = 0f
+                    if (exo.playbackState == Player.STATE_ENDED) seekTo(0f)
                     playing = !playing
                     poke++
                 },
                 onSeek = ::seek,
                 onScrub = {
                     position = it * total
+                    if (!scrubbing) exo.seekTo((position * 1000).toLong())
                     poke++
                 },
-                onScrubbing = { scrubbing = it },
+                onScrubbing = {
+                    scrubbing = it
+                    if (!it) seekTo(position)
+                },
                 onSpeed = {
                     speed = (speed + 1) % Speeds.size
                     poke++
@@ -253,7 +387,7 @@ fun PlayerScreen(
                 },
                 onEpisodes = { episodesOpen = true },
                 onAudio = { toaster.show(audioMessage) },
-                onNext = { nextEpisode?.let { episode = it.number } },
+                onNext = { nextEpisode?.let { openEpisode(it.number) } },
             )
         }
 
@@ -297,9 +431,44 @@ fun PlayerScreen(
                 onClose = { episodesOpen = false },
                 onSelect = { number ->
                     episodesOpen = false
-                    episode = number
+                    openEpisode(number)
                 },
             )
+        }
+    }
+}
+
+@Composable
+private fun PlayerNotice(
+    heading: String,
+    body: String,
+    onBack: () -> Unit,
+    action: String? = null,
+    onAction: () -> Unit = {},
+) {
+    Box(
+        Modifier
+            .fillMaxSize()
+            .padding(horizontal = Space.xl, vertical = Space.m)
+    ) {
+        BarIcon(XIcons.Back, stringResource(R.string.action_back), onBack)
+        Column(
+            Modifier
+                .align(Alignment.Center)
+                .padding(horizontal = Space.xl),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(heading, style = XType.Title)
+            Spacer(Modifier.height(Space.s))
+            Text(
+                body,
+                style = XType.Body.copy(color = XColors.TextSecondary),
+                textAlign = TextAlign.Center,
+            )
+            if (action != null) {
+                Spacer(Modifier.height(Space.l))
+                XButton(action, onAction, Modifier.width(220.dp))
+            }
         }
     }
 }
@@ -311,6 +480,7 @@ private fun Controls(
     playing: Boolean,
     position: Float,
     total: Float,
+    buffered: Float,
     speedLabel: String,
     isSeries: Boolean,
     hasNext: Boolean,
@@ -375,7 +545,7 @@ private fun Controls(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Scrubber(
                     fraction = position / total,
-                    buffered = (position / total + 0.12f).coerceAtMost(1f),
+                    buffered = buffered,
                     onScrub = onScrub,
                     onScrubbing = onScrubbing,
                     modifier = Modifier.weight(1f),
