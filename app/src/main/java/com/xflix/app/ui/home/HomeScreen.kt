@@ -268,13 +268,15 @@ fun HomeScreen(
             onSearch = onSearch,
         )
 
-        val genreLabels = Genre.entries.map { stringResource(it.label) }
+        // Hanya genre yang ada isinya
+        val genres = remember { Genre.entries.filter { g -> Catalog.available.any { g in it.genres } } }
+        val genreLabels = genres.map { stringResource(it.label) }
         PickerOverlay(
             visible = categoriesOpen,
             options = listOf(stringResource(R.string.category_home)) + genreLabels,
-            selected = filter.genre?.let { it.ordinal + 1 } ?: 0,
+            selected = filter.genre?.let { genres.indexOf(it) + 1 } ?: 0,
             onPick = { index ->
-                applyFilter(filter.copy(genre = if (index == 0) null else Genre.entries[index - 1]))
+                applyFilter(filter.copy(genre = if (index == 0) null else genres[index - 1]))
                 categoriesOpen = false
             },
             onDismiss = { categoriesOpen = false },
@@ -521,7 +523,7 @@ private fun FilterChips(filter: HomeFilter, onFilter: (HomeFilter) -> Unit, onCa
                 Icon(XIcons.Close, contentDescription = stringResource(R.string.action_clear_filter), tint = Color.White, modifier = Modifier.size(16.dp))
             }
         }
-        listOf(Kind.Series, Kind.Movie).forEach { kind ->
+        listOf(Kind.Series, Kind.Movie).filter { k -> Catalog.available.any { it.kind == k } }.forEach { kind ->
             AnimatedVisibility(
                 visible = filter.kind == null || filter.kind == kind,
                 enter = expandHorizontally(tween(Motion.Medium)) + fadeIn(),

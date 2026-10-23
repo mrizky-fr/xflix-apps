@@ -131,7 +131,7 @@ fun DetailScreen(
     val listState = rememberLazyListState()
     val tabs = buildList {
         if (isSeries) add(stringResource(R.string.tab_episodes))
-        add(stringResource(R.string.tab_similar))
+        if (similar.isNotEmpty()) add(stringResource(R.string.tab_similar))
     }
     val showEpisodes = isSeries && tab == 0
     val episodes = title.seasons.getOrNull(season - 1)?.episodes.orEmpty()
@@ -166,8 +166,10 @@ fun DetailScreen(
                     },
                 )
             }
-            item(key = "tabs") {
-                DetailTabs(tabs, tab) { tab = it }
+            if (tabs.isNotEmpty()) {
+                item(key = "tabs") {
+                    DetailTabs(tabs, tab) { tab = it }
+                }
             }
             if (showEpisodes) {
                 if (title.seasons.size > 1) {

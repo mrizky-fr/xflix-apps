@@ -191,7 +191,10 @@ private fun PosterWall() {
         animationSpec = infiniteRepeatable(tween(48_000, easing = LinearEasing)),
         label = "wall-drift",
     )
-    val posters = remember { Catalog.titles.map { it.poster } }
+    // Poster plus gambar episode
+    val posters = remember {
+        Catalog.titles.flatMap { t -> listOf(t.poster) + t.seasons.flatMap { s -> s.episodes.map { it.still } } }
+    }
     Box(
         Modifier
             .fillMaxSize()
@@ -208,7 +211,7 @@ private fun PosterWall() {
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             repeat(4) { col ->
-                val ids = remember(col) { (posters.drop(col * 5) + posters.take(col * 5)).take(7) }
+                val ids = remember(col) { List(7) { i -> posters[(col * 3 + i) % posters.size] } }
                 PosterColumn(
                     ids = ids,
                     progress = { (drift + col * 0.21f) % 1f },

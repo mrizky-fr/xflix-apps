@@ -137,10 +137,12 @@ fun MyXflixScreen(
                 onClick = onDownloads,
             )
         }
-        item {
-            Spacer(Modifier.height(Space.l))
-            SectionHeader(stringResource(R.string.my_liked))
-            PosterRow(vm.liked.map { Catalog.title(it) }, "liked", onOpenTitle)
+        if (vm.liked.isNotEmpty()) {
+            item {
+                Spacer(Modifier.height(Space.l))
+                SectionHeader(stringResource(R.string.my_liked))
+                PosterRow(vm.liked.map { Catalog.title(it) }, "liked", onOpenTitle)
+            }
         }
         item {
             Spacer(Modifier.height(Dimens.RowGap))

@@ -92,15 +92,17 @@ private fun buildEntries(): List<Entry> {
     val everyone = Catalog.available.filter { it.newEpisodes || it.original }.take(5)
     val topSeries = Catalog.top10.filter { it.kind == Kind.Series }
     val topMovies = Catalog.top10.filter { it.kind == Kind.Movie }
+    // Bagian kosong tidak ditampilkan
+    fun MutableList<Entry>.section(section: Section, titles: List<Title>, ranked: Boolean) {
+        if (titles.isEmpty()) return
+        add(Entry.Header(section))
+        titles.forEachIndexed { i, t -> add(Entry.Item(section, t, if (ranked) i + 1 else null)) }
+    }
     return buildList {
-        add(Entry.Header(Section.ComingSoon))
-        Catalog.upcoming.forEach { add(Entry.Item(Section.ComingSoon, it, null)) }
-        add(Entry.Header(Section.Everyone))
-        everyone.forEach { add(Entry.Item(Section.Everyone, it, null)) }
-        add(Entry.Header(Section.TopSeries))
-        topSeries.forEachIndexed { i, t -> add(Entry.Item(Section.TopSeries, t, i + 1)) }
-        add(Entry.Header(Section.TopMovies))
-        topMovies.forEachIndexed { i, t -> add(Entry.Item(Section.TopMovies, t, i + 1)) }
+        section(Section.ComingSoon, Catalog.upcoming, ranked = false)
+        section(Section.Everyone, everyone, ranked = false)
+        section(Section.TopSeries, topSeries, ranked = true)
+        section(Section.TopMovies, topMovies, ranked = true)
     }
 }
 
@@ -116,14 +118,15 @@ fun NewHotScreen(
     val headerIndex = remember(entries) {
         entries.withIndex().filter { it.value is Entry.Header }.associate { it.value.section to it.index }
     }
+    val sections = remember(headerIndex) { headerIndex.keys.toList() }
     val listState = rememberLazyListState()
     val chipState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     // Chip aktif mengikuti posisi gulir
     val current by remember {
-        derivedStateOf { entries.getOrNull(listState.firstVisibleItemIndex)?.section ?: Section.ComingSoon }
+        derivedStateOf { entries.getOrNull(listState.firstVisibleItemIndex)?.section ?: sections.firstOrNull() }
     }
-    LaunchedEffect(current) { chipState.animateScrollToItem(current.ordinal) }
+    LaunchedEffect(current) { chipState.animateScrollToItem(sections.indexOf(current).coerceAtLeast(0)) }
 
     Column(
         Modifier
@@ -146,7 +149,7 @@ fun NewHotScreen(
             contentPadding = PaddingValues(horizontal = Dimens.Gutter, vertical = Space.s),
             horizontalArrangement = Arrangement.spacedBy(Space.s),
         ) {
-            itemsIndexed(Section.entries) { _, section ->
+            itemsIndexed(sections) { _, section ->
                 SectionChip(stringResource(section.label), selected = section == current) {
                     scope.launch { listState.animateScrollToItem(headerIndex.getValue(section)) }
                 }
