@@ -3,6 +3,13 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.compose'
 }
 
+// Kunci rilis: keystore.properties atau env
+def keystoreProps = new Properties()
+def keystorePropsFile = rootProject.file('keystore.properties')
+if (keystorePropsFile.exists()) keystorePropsFile.withInputStream { keystoreProps.load(it) }
+def signingValue = { String key, String env -> keystoreProps.getProperty(key) ?: System.getenv(env) }
+def releaseStoreFile = signingValue('storeFile', 'XFLIX_KEYSTORE_FILE')
+
 android {
     namespace 'com.xflix.app'
     compileSdk 36
@@ -14,6 +21,16 @@ android {
         versionCode 1
         versionName '1.0.0'
     }
+    signingConfigs {
+        release {
+            if (releaseStoreFile) {
+                storeFile rootProject.file(releaseStoreFile)
+                storePassword signingValue('storePassword', 'XFLIX_KEYSTORE_PASSWORD')
+                keyAlias signingValue('keyAlias', 'XFLIX_KEY_ALIAS')
+                keyPassword signingValue('keyPassword', 'XFLIX_KEY_PASSWORD')
+            }
+        }
+    }
     buildFeatures {
         compose true
     }
@@ -22,6 +39,7 @@ android {
             applicationIdSuffix '.debug'
         }
         release {
+            if (releaseStoreFile) signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
