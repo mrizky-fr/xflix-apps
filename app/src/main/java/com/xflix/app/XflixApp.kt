@@ -92,6 +92,9 @@ import com.xflix.app.ui.theme.Dimens
 import com.xflix.app.ui.theme.Motion
 import com.xflix.app.ui.theme.XType
 
+// Sementara login dilewati, false untuk aktif
+const val SkipLogin = true
+
 object Routes {
     const val Intro = "intro"
     const val Onboarding = "onboarding"
@@ -186,7 +189,7 @@ fun XflixApp() {
                     ) {
                         screen(Routes.Intro) {
                             IntroScreen(onFinished = {
-                                nav.resetTo(if (vm.account == null) Routes.Onboarding else Routes.Profiles)
+                                nav.resetTo(if (vm.account == null && !SkipLogin) Routes.Onboarding else Routes.Profiles)
                             })
                         }
                         screen(Routes.Onboarding) {
@@ -243,7 +246,7 @@ fun XflixApp() {
                                 onSearch = { nav.navigate(Routes.Search) },
                                 onSignOut = {
                                     vm.signOut()
-                                    nav.resetTo(Routes.Onboarding)
+                                    nav.resetTo(if (SkipLogin) Routes.Profiles else Routes.Onboarding)
                                 },
                             )
                         }
