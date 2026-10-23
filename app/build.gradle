@@ -1,3 +1,5 @@
+import javax.inject.Inject
+
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.plugin.compose'
@@ -53,6 +55,46 @@ android {
 
 base {
     archivesName = "xflix_" + android.defaultConfig.versionName
+}
+
+// Video ikut APK, bukan git
+def mediaLibrary = file(providers.gradleProperty('xflix.mediaDir')
+    .getOrElse(new File(System.getProperty('user.home'), 'Videos/Xflix').path))
+
+abstract class BundleXflixMedia extends DefaultTask {
+    @InputFiles
+    @PathSensitive(PathSensitivity.RELATIVE)
+    abstract ConfigurableFileCollection getVideos()
+
+    @Internal
+    abstract DirectoryProperty getLibrary()
+
+    @OutputDirectory
+    abstract DirectoryProperty getOutputDir()
+
+    @Inject
+    abstract FileSystemOperations getFs()
+
+    @TaskAction
+    void bundle() {
+        def source = library.get().asFile
+        fs.sync { spec ->
+            spec.into(outputDir.dir('media'))
+            if (source.isDirectory()) spec.from(source) { it.include('*/*.mp4') }
+        }
+    }
+}
+
+def bundleMedia = tasks.register('bundleXflixMedia', BundleXflixMedia) {
+    library.fileValue(mediaLibrary)
+    videos.from(fileTree(mediaLibrary) { include '*/*.mp4' })
+    outputDir.set(layout.buildDirectory.dir('generated/xflix-media'))
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        variant.sources.assets?.addGeneratedSourceDirectory(bundleMedia) { it.outputDir }
+    }
 }
 
 dependencies {

@@ -3,12 +3,7 @@ package com.xflix.app.ui.player
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.net.Uri
-import android.provider.Settings
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import android.view.WindowManager
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -97,7 +92,6 @@ import com.xflix.app.data.Kind
 import com.xflix.app.data.LocalMedia
 import com.xflix.app.ui.components.BarIcon
 import com.xflix.app.ui.components.LocalToaster
-import com.xflix.app.ui.components.XButton
 import com.xflix.app.ui.components.XImage
 import com.xflix.app.ui.icons.XIcons
 import com.xflix.app.ui.theme.Motion
@@ -134,16 +128,7 @@ fun PlayerScreen(
     val resumeAt = Catalog.continueWatching
         .firstOrNull { it.titleId == id && (!isSeries || (it.season == season && it.episode == episode)) }
         ?.fraction ?: 0f
-    var granted by remember { mutableStateOf(LocalMedia.hasPermission(context)) }
-    var asked by rememberSaveable { mutableStateOf(false) }
-    val askPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
-        granted = ok
-        asked = true
-    }
-    LaunchedEffect(Unit) { if (!granted) askPermission.launch(LocalMedia.permission) }
-    val file = remember(id, season, episode, granted) {
-        if (granted) LocalMedia.find(context, title, season, episode) else null
-    }
+    val source = remember(id, season, episode) { LocalMedia.find(context, title, season, episode) }
     val toaster = LocalToaster.current
     val audioMessage = stringResource(R.string.toast_audio)
 
@@ -188,23 +173,23 @@ fun PlayerScreen(
         }
     }
     // Muat episode aktif
-    LaunchedEffect(file) {
+    LaunchedEffect(source) {
         firstFrame = false
         failed = false
         total = estimate
         buffered = 0f
-        if (file == null) {
+        if (source == null) {
             exo.clearMediaItems()
             return@LaunchedEffect
         }
-        exo.setMediaItem(MediaItem.fromUri(Uri.fromFile(file)), (position * 1000).toLong())
+        exo.setMediaItem(MediaItem.fromUri(source), (position * 1000).toLong())
         exo.prepare()
     }
     LaunchedEffect(playing) { exo.playWhenReady = playing }
     LaunchedEffect(speed) { exo.setPlaybackSpeed(Speeds[speed]) }
     // Posisi mengikuti player
-    LaunchedEffect(file, scrubbing) {
-        while (file != null && !scrubbing) {
+    LaunchedEffect(source, scrubbing) {
+        while (source != null && !scrubbing) {
             position = exo.currentPosition / 1000f
             buffered = (exo.bufferedPosition / 1000f / total).coerceIn(0f, 1f)
             delay(250)
@@ -215,8 +200,6 @@ fun PlayerScreen(
     DisposableEffect(lifecycle) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_PAUSE) playing = false
-            // Bisa berubah dari Pengaturan
-            if (event == Lifecycle.Event.ON_RESUME) granted = LocalMedia.hasPermission(context)
         }
         lifecycle.addObserver(observer)
         onDispose { lifecycle.removeObserver(observer) }
@@ -259,7 +242,7 @@ fun PlayerScreen(
     }
 
     val dim by animateFloatAsState(
-        if (controls || episodesOpen || file == null || failed) 0.5f else 0f,
+        if (controls || episodesOpen || source == null || failed) 0.5f else 0f,
         tween(Motion.Medium),
         label = "dim",
     )
@@ -280,11 +263,11 @@ fun PlayerScreen(
                             }
                         }
                     },
-                    onDoubleTap = { offset -> if (!locked && file != null) seek(forward = offset.x > size.width / 2f) },
+                    onDoubleTap = { offset -> if (!locked && source != null) seek(forward = offset.x > size.width / 2f) },
                 )
             }
     ) {
-        if (file != null) {
+        if (source != null) {
             AndroidView(
                 factory = { ctx ->
                     PlayerView(ctx).apply {
@@ -313,41 +296,21 @@ fun PlayerScreen(
 
         SeekIndicator(flash)
 
-        val path = LocalMedia.relativePath(title, season, episode)
         when {
-            !granted -> PlayerNotice(
-                heading = stringResource(R.string.player_permission_title),
-                body = stringResource(R.string.player_permission_body, LocalMedia.FOLDER),
-                action = stringResource(R.string.player_permission_action),
-                onAction = {
-                    val activity = context.findActivity()
-                    // Ditolak permanen, buka Pengaturan
-                    val blocked = asked && activity != null &&
-                        !activity.shouldShowRequestPermissionRationale(LocalMedia.permission)
-                    if (blocked) {
-                        context.startActivity(
-                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
-                        )
-                    } else {
-                        askPermission.launch(LocalMedia.permission)
-                    }
-                },
-                onBack = onBack,
-            )
-            file == null -> PlayerNotice(
+            source == null -> PlayerNotice(
                 heading = stringResource(R.string.player_missing_title),
-                body = stringResource(R.string.player_missing_body, path, LocalMedia.FOLDER),
+                body = stringResource(R.string.player_missing_body),
                 onBack = onBack,
             )
             failed -> PlayerNotice(
                 heading = stringResource(R.string.player_failed_title),
-                body = stringResource(R.string.player_failed_body, path, LocalMedia.FOLDER),
+                body = stringResource(R.string.player_failed_body),
                 onBack = onBack,
             )
         }
 
         AnimatedVisibility(
-            visible = file != null && !failed && controls && !locked && !episodesOpen,
+            visible = source != null && !failed && controls && !locked && !episodesOpen,
             enter = fadeIn(tween(Motion.Short)),
             exit = fadeOut(tween(Motion.Medium)),
         ) {
@@ -440,13 +403,7 @@ fun PlayerScreen(
 }
 
 @Composable
-private fun PlayerNotice(
-    heading: String,
-    body: String,
-    onBack: () -> Unit,
-    action: String? = null,
-    onAction: () -> Unit = {},
-) {
+private fun PlayerNotice(heading: String, body: String, onBack: () -> Unit) {
     Box(
         Modifier
             .fillMaxSize()
@@ -466,10 +423,6 @@ private fun PlayerNotice(
                 style = XType.Body.copy(color = XColors.TextSecondary),
                 textAlign = TextAlign.Center,
             )
-            if (action != null) {
-                Spacer(Modifier.height(Space.l))
-                XButton(action, onAction, Modifier.width(220.dp))
-            }
         }
     }
 }
