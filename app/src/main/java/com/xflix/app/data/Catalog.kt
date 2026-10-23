@@ -13,6 +13,28 @@ object Catalog {
     private fun yt(n: Int, name: String, videoId: String, @DrawableRes still: Int) =
         Episode(n, name, 0, "", still, youtubeId = videoId)
 
+    // Satu video Kamar Film, satu serial
+    private fun kamarFilm(
+        id: String,
+        name: String,
+        videoId: String,
+        episode: String,
+        genres: Set<Genre>,
+        moods: List<String>,
+        @DrawableRes poster: Int,
+        @DrawableRes backdrop: Int,
+        @DrawableRes still: Int,
+        tint: Color,
+        style: TitleStyle,
+    ) = Title(
+        id = id, name = name, kind = Kind.Series, year = 2026, rating = "13+",
+        genres = genres, moods = moods,
+        synopsis = "Dari kanal Kamar Film, diputar langsung dari YouTube.",
+        cast = emptyList(), creator = "Kamar Film",
+        poster = poster, backdrop = backdrop, tint = tint, style = style,
+        seasons = listOf(Season(1, listOf(yt(1, episode, videoId, still)))),
+    )
+
     val titles: List<Title> = listOf(
         Title(
             id = "sekolah_normal", name = "Sekolah Normal", kind = Kind.Series, year = 2026, rating = "13+",
@@ -106,6 +128,76 @@ object Catalog {
                 ),
             ),
         ),
+        kamarFilm(
+            id = "kf_reinkarnasi", name = "Teori Reinkarnasi", videoId = "RMaYd-hYgJ0",
+            episode = "SECARA SAINS APAKAH TEORI REINKARNASI BISA DIBUKTIKAN?",
+            genres = setOf(Genre.Documentary), moods = listOf("Sains", "Misteri"),
+            poster = R.drawable.poster_kf_reinkarnasi, backdrop = R.drawable.backdrop_kf_reinkarnasi, still = R.drawable.still_kf_reinkarnasi_1,
+            tint = Color(0xFF482624), style = TitleStyle.Serif,
+        ),
+        kamarFilm(
+            id = "kf_sutan_sjahrir", name = "Sutan Sjahrir", videoId = "qZHEHzkNsGo",
+            episode = "Demokrat Sejati yang Dihabisi Penguasa: Mengapa Sejarah Sengaja Mengaburkan Sutan Sjahrir?",
+            genres = setOf(Genre.Documentary), moods = listOf("Sejarah", "Politik"),
+            poster = R.drawable.poster_kf_sutan_sjahrir, backdrop = R.drawable.backdrop_kf_sutan_sjahrir, still = R.drawable.still_kf_sutan_sjahrir_1,
+            tint = Color(0xFF54312F), style = TitleStyle.Condensed,
+        ),
+        kamarFilm(
+            id = "kf_alam_semesta", name = "Sendirian di Alam Semesta?", videoId = "GmQ3Q6xJqBg",
+            episode = "Benarkah Kita Sendirian di Alam Semesta yang Seluas Ini? Mari Menghitung Kemungkinannya!!!",
+            genres = setOf(Genre.Documentary), moods = listOf("Sains", "Antariksa"),
+            poster = R.drawable.poster_kf_alam_semesta, backdrop = R.drawable.backdrop_kf_alam_semesta, still = R.drawable.still_kf_alam_semesta_1,
+            tint = Color(0xFF4E5357), style = TitleStyle.Serif,
+        ),
+        kamarFilm(
+            id = "kf_area_51", name = "Rahasia Area 51", videoId = "XWEwrV3nOaY",
+            episode = "Kenapa Pemerintah Amerika Mati-Matian Sembunyikan Apa yang Sebenarnya Ada di Area 51?",
+            genres = setOf(Genre.Documentary, Genre.Mystery), moods = listOf("Misteri", "Konspirasi"),
+            poster = R.drawable.poster_kf_area_51, backdrop = R.drawable.backdrop_kf_area_51, still = R.drawable.still_kf_area_51_1,
+            tint = Color(0xFF5B4B4B), style = TitleStyle.Condensed,
+        ),
+        kamarFilm(
+            id = "kf_napas_bukti", name = "Napas Jadi Bukti", videoId = "LHvEKZU_Ksc",
+            episode = "TIDAK AKAN LAGI KASUS TAK TERPECAHKAN - NAFAS PUN BISA MENJADI BUKTI SEKARANG",
+            genres = setOf(Genre.Documentary, Genre.Crime), moods = listOf("Forensik", "Sains"),
+            poster = R.drawable.poster_kf_napas_bukti, backdrop = R.drawable.backdrop_kf_napas_bukti, still = R.drawable.still_kf_napas_bukti_1,
+            tint = Color(0xFF5F5A56), style = TitleStyle.Wide,
+        ),
+        kamarFilm(
+            id = "kf_omuamua", name = "Misteri Omuamua", videoId = "kYfN9xT_Ld8",
+            episode = "600.000 Tahun Perjalanan Menuju Bumi! Siapa Sebenarnya yang Mengirim Omuamua?",
+            genres = setOf(Genre.Documentary, Genre.Mystery), moods = listOf("Antariksa", "Misteri"),
+            poster = R.drawable.poster_kf_omuamua, backdrop = R.drawable.backdrop_kf_omuamua, still = R.drawable.still_kf_omuamua_1,
+            tint = Color(0xFF1A1718), style = TitleStyle.Wide,
+        ),
+        kamarFilm(
+            id = "kf_fbi_trump", name = "Ditangkap FBI, Dibebaskan Trump", videoId = "lhwf8J-payY",
+            episode = "DITANGKAP FBI - DIPENJARA SEUMUR HIDUP - LALU DIBEBASKAN OLEH TRUMP - SIAPA ANAK MUDA INI?",
+            genres = setOf(Genre.Documentary, Genre.Crime), moods = listOf("Kriminal", "Kisah Nyata"),
+            poster = R.drawable.poster_kf_fbi_trump, backdrop = R.drawable.backdrop_kf_fbi_trump, still = R.drawable.still_kf_fbi_trump_1,
+            tint = Color(0xFF5F5553), style = TitleStyle.Condensed,
+        ),
+        kamarFilm(
+            id = "kf_gempa_besar", name = "Gempa Besar", videoId = "2wkhktYASdE",
+            episode = "SEBERAPA DEKAT GEMPA BESAR ITU AKAN DATANG?",
+            genres = setOf(Genre.Documentary), moods = listOf("Sains", "Bencana"),
+            poster = R.drawable.poster_kf_gempa_besar, backdrop = R.drawable.backdrop_kf_gempa_besar, still = R.drawable.still_kf_gempa_besar_1,
+            tint = Color(0xFF373E42), style = TitleStyle.Condensed,
+        ),
+        kamarFilm(
+            id = "kf_perampokan", name = "Perampokan Paling Mulus", videoId = "dYlu1jUchzo",
+            episode = "PERAMPOKAN BESAR PALING MULUS INI JUSTRU BERAKHIR TRAGIS DENGAN CARA SEPELE. APA YANG TERJADI?",
+            genres = setOf(Genre.Documentary, Genre.Crime), moods = listOf("Kriminal", "Kisah Nyata"),
+            poster = R.drawable.poster_kf_perampokan, backdrop = R.drawable.backdrop_kf_perampokan, still = R.drawable.still_kf_perampokan_1,
+            tint = Color(0xFF4A3030), style = TitleStyle.Serif,
+        ),
+        kamarFilm(
+            id = "kf_pemimpin_sekte", name = "Pemimpin Sekte", videoId = "VPlMTCds6QA",
+            episode = "Pemimpin Sekte ini Memutus Logika Pengikutnya dari Realitas dengan cara yang Mengerikan",
+            genres = setOf(Genre.Documentary, Genre.Crime), moods = listOf("Psikologi", "Kisah Nyata"),
+            poster = R.drawable.poster_kf_pemimpin_sekte, backdrop = R.drawable.backdrop_kf_pemimpin_sekte, still = R.drawable.still_kf_pemimpin_sekte_1,
+            tint = Color(0xFF4D474A), style = TitleStyle.Serif,
+        ),
     )
 
     private val byId = titles.associateBy { it.id }
@@ -144,6 +236,7 @@ object Catalog {
     val continueWatching = emptyList<WatchProgress>()
 
     val notices = listOf(
+        Notice("kf_reinkarnasi", "Baru Ditambahkan", "10 video terbaru Kamar Film sudah bisa ditonton online.", "Hari ini"),
         Notice("sains_rumah_editor", "Baru Ditambahkan", "Sains Rumah Editor, 4 episode sudah tersedia.", "Hari ini"),
         Notice("sekolah_normal", "Baru Ditambahkan", "Sekolah Normal, 4 episode sudah tersedia.", "Hari ini"),
     )
