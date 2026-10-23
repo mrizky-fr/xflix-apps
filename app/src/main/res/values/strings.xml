@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="PluralsCandidate,Typos">
+    <!-- Bahasa Indonesia tanpa bentuk jamak -->
+    <string name="app_name">Xflix</string>
+
+    <!-- Navigasi -->
+    <string name="nav_home">Beranda</string>
+    <string name="nav_new_hot">Baru &amp; Populer</string>
+    <string name="nav_my">Xflix Saya</string>
+    <string name="nav_downloads">Download</string>
+
+    <!-- Aksi -->
+    <string name="action_back">Kembali</string>
+    <string name="action_cast">Transmisikan</string>
+    <string name="action_clear">Hapus teks</string>
+    <string name="action_clear_filter">Hapus filter</string>
+    <string name="action_close">Tutup</string>
+    <string name="action_create_account">Buat Akun</string>
+    <string name="action_delete">Hapus</string>
+    <string name="action_done">Selesai</string>
+    <string name="action_download">Download</string>
+    <string name="action_download_episode">Download Episode 1</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_forgot_password">Lupa sandi?</string>
+    <string name="action_get_started">Mulai Sekarang</string>
+    <string name="action_hide">SEMBUNYIKAN</string>
+    <string name="action_info">Info</string>
+    <string name="action_mute">Suara</string>
+    <string name="action_my_list">Daftar Saya</string>
+    <string name="action_pause">Jeda</string>
+    <string name="action_play">Putar</string>
+    <string name="action_privacy">PRIVASI</string>
+    <string name="action_rate">Nilai</string>
+    <string name="action_rated">Disukai</string>
+    <string name="action_remind_me">Ingatkan Saya</string>
+    <string name="action_reminded">Kamu Akan Diingatkan</string>
+    <string name="action_reminded_short">Diingatkan</string>
+    <string name="action_search">Cari</string>
+    <string name="action_share">Bagikan</string>
+    <string name="action_show">TAMPILKAN</string>
+    <string name="action_sign_in">Masuk</string>
+    <string name="action_sign_in_caps">MASUK</string>
+    <string name="action_sign_in_code">Gunakan Kode Masuk</string>
+    <string name="action_switch_profile">Ganti profil</string>
+    <string name="action_voice">Cari dengan suara</string>
+
+    <!-- Onboarding -->
+    <string name="onb_1_title">Film, serial, dan banyak lagi tanpa batas</string>
+    <string name="onb_1_body">Tonton di mana saja. Berhenti kapan saja.</string>
+    <string name="onb_2_title">Download, tonton tanpa sinyal</string>
+    <string name="onb_2_body">Simpan tontonan favorit untuk perjalanan, kereta, atau pesawat.</string>
+    <string name="onb_3_title">Satu akun, sampai lima profil</string>
+    <string name="onb_3_body">Rekomendasi tiap orang terpisah, termasuk profil khusus anak.</string>
+    <string name="onb_download_meta">E1 · 47m</string>
+
+    <!-- Auth -->
+    <string name="sign_in_title">Masuk</string>
+    <string name="sign_up_step">LANGKAH 1 DARI 2</string>
+    <string name="sign_up_title">Buat sandi untuk memulai keanggotaanmu</string>
+    <string name="sign_up_body">Satu akun untuk semua perangkatmu. Bisa berhenti kapan saja.</string>
+    <string name="sign_up_opt_out">Jangan kirimi saya penawaran khusus lewat email.</string>
+    <string name="sign_up_prompt">"Baru di Xflix? "</string>
+    <string name="sign_up_link">Daftar sekarang.</string>
+    <string name="sign_in_prompt">"Sudah punya akun? "</string>
+    <string name="sign_in_link">Masuk.</string>
+    <string name="label_or">ATAU</string>
+    <string name="field_identity">Email atau nomor telepon</string>
+    <string name="field_email">Email</string>
+    <string name="field_password">Sandi</string>
+    <string name="field_new_password">Buat sandi</string>
+    <string name="error_identity_empty">Masukkan email atau nomor telepon.</string>
+    <string name="error_email">Masukkan alamat email yang valid.</string>
+    <string name="error_phone">Masukkan nomor telepon yang valid (10–14 digit).</string>
+    <string name="error_password">Sandi harus terdiri dari 4 sampai 60 karakter.</string>
+    <string name="error_password_short">Sandi minimal 8 karakter.</string>
+    <string name="strength_empty">Gunakan minimal 8 karakter</string>
+    <string name="strength_weak">Lemah</string>
+    <string name="strength_medium">Lumayan</string>
+    <string name="strength_strong">Kuat</string>
+
+    <!-- Profil -->
+    <string name="profiles_title">Siapa yang menonton?</string>
+    <string name="profiles_manage">Kelola Profil</string>
+    <string name="profiles_add">Tambah Profil</string>
+
+    <!-- Beranda -->
+    <string name="home_for">Untuk %1$s</string>
+    <string name="chip_series">Serial</string>
+    <string name="chip_movies">Film</string>
+    <string name="chip_categories">Kategori</string>
+    <string name="category_home">Beranda</string>
+    <string name="row_continue">Lanjutkan Menonton untuk %1$s</string>
+    <string name="row_my_list">Daftar Saya</string>
+    <string name="row_top10">Top 10 di Indonesia Hari Ini</string>
+    <string name="row_top10_series">Top 10 Serial di Indonesia Hari Ini</string>
+    <string name="row_top10_movies">Top 10 Film di Indonesia Hari Ini</string>
+    <string name="row_originals">Hanya di Xflix</string>
+    <string name="row_new">Baru di Xflix</string>
+    <string name="row_horror">Horor yang Bikin Susah Tidur</string>
+    <string name="row_thriller">Thriller Penuh Teka-teki</string>
+    <string name="row_romance">Kisah Cinta &amp; Drama</string>
+    <string name="row_docs">Dokumenter: Indonesia dari Dekat</string>
+    <string name="row_action">Aksi &amp; Kriminal</string>
+    <string name="tag_new_episodes">Episode Baru</string>
+    <string name="minutes_left">Sisa %1$dm</string>
+    <string name="kind_series_caps">SERIAL</string>
+    <string name="kind_movie_caps">FILM</string>
+
+    <!-- Genre -->
+    <string name="genre_action">Aksi</string>
+    <string name="genre_horror">Horor</string>
+    <string name="genre_thriller">Thriller</string>
+    <string name="genre_romance">Romantis</string>
+    <string name="genre_scifi">Fiksi Ilmiah</string>
+    <string name="genre_documentary">Dokumenter</string>
+    <string name="genre_mystery">Misteri</string>
+    <string name="genre_drama">Drama</string>
+    <string name="genre_crime">Kriminal</string>
+
+    <!-- Detail -->
+    <string name="runtime_hm">%1$dj %2$dm</string>
+    <string name="runtime_m">%1$dm</string>
+    <string name="seasons_count">%1$d Musim</string>
+    <string name="episodes_count">%1$d Episode</string>
+    <string name="season_label">Musim %1$d</string>
+    <string name="top10_rank_series">#%1$d di Serial Hari Ini</string>
+    <string name="top10_rank_movies">#%1$d di Film Hari Ini</string>
+    <string name="premieres_on">Tayang %1$s</string>
+    <string name="label_preview">Pratinjau</string>
+    <string name="label_cast">Pemeran: %1$s</string>
+    <string name="label_director">Sutradara: %1$s</string>
+    <string name="label_creator">Kreator: %1$s</string>
+    <string name="tab_episodes">Episode</string>
+    <string name="tab_similar">Serupa</string>
+    <string name="downloading_percent">Mendownload %1$d%%</string>
+    <string name="downloaded">Terdownload</string>
+    <string name="share_text">Tonton %1$s di Xflix.</string>
+
+    <!-- Baru & Populer -->
+    <string name="newhot_coming">Segera Tayang</string>
+    <string name="newhot_everyone">Semua Orang Menonton</string>
+    <string name="newhot_top_series">Top 10 Serial</string>
+    <string name="newhot_top_movies">Top 10 Film</string>
+
+    <!-- Cari -->
+    <string name="search_hint">Cari judul, pemeran, suasana</string>
+    <string name="search_top">Pencarian Teratas</string>
+    <string name="search_results">Film &amp; Serial</string>
+    <string name="search_empty_title">Belum ketemu</string>
+    <string name="search_empty_body">Coba kata kunci lain: judul, nama pemeran, atau suasana seperti “horor” dan “romantis”.</string>
+
+    <!-- Xflix Saya -->
+    <string name="my_notifications">Notifikasi</string>
+    <string name="my_downloads_count">%1$d judul di perangkat ini</string>
+    <string name="my_liked">Serial &amp; Film yang Kamu Sukai</string>
+    <string name="my_list_empty">Tambahkan judul ke Daftar Saya supaya gampang ditemukan lagi.</string>
+    <string name="my_manage_profiles">Kelola Profil</string>
+    <string name="my_app_settings">Pengaturan Aplikasi</string>
+    <string name="my_account">Akun</string>
+    <string name="my_help">Bantuan</string>
+    <string name="my_sign_out">Keluar</string>
+    <string name="my_version">Versi %1$s</string>
+
+    <!-- Download -->
+    <string name="downloads_smart">Download Pintar</string>
+    <string name="smart_downloads_on">AKTIF</string>
+    <string name="smart_downloads_off">NONAKTIF</string>
+    <string name="downloads_episodes_meta">%1$d Episode · %2$s</string>
+    <string name="downloads_movie_meta">Film · %1$s · %2$s</string>
+    <string name="downloads_empty">Film dan serial yang kamu download muncul di sini, siap ditonton tanpa internet.</string>
+    <string name="downloads_find">Cari Tontonan untuk Didownload</string>
+    <string name="downloads_find_more">Cari Lagi untuk Didownload</string>
+
+    <!-- Player -->
+    <string name="player_episode">M%1$d:E%2$d · %3$s</string>
+    <string name="player_speed">Kecepatan (%1$s)</string>
+    <string name="player_lock">Kunci</string>
+    <string name="player_unlock">Ketuk untuk membuka kunci</string>
+    <string name="player_audio">Audio &amp; Subtitle</string>
+    <string name="player_next">Episode Berikutnya</string>
+    <string name="player_rewind">Mundur 10 detik</string>
+    <string name="player_forward">Maju 10 detik</string>
+    <string name="player_seconds">%1$d detik</string>
+
+    <!-- Fitur yang belum tersambung -->
+    <string name="toast_cast">Transmisi belum tersedia di versi demo</string>
+    <string name="toast_privacy">Halaman privasi belum ditautkan di versi demo</string>
+    <string name="toast_sign_in_code">Masuk dengan kode belum tersambung ke server</string>
+    <string name="toast_forgot_password">Reset sandi belum tersambung ke server</string>
+    <string name="toast_add_profile">Tambah profil belum tersedia di versi demo</string>
+    <string name="toast_edit_profile">Edit profil %1$s belum tersedia di versi demo</string>
+    <string name="toast_voice">Pencarian suara belum tersedia di versi demo</string>
+    <string name="toast_audio">Pilihan audio &amp; subtitle belum tersedia di versi demo</string>
+    <string name="toast_coming_soon">Menu ini belum tersedia di versi demo</string>
+</resources>
