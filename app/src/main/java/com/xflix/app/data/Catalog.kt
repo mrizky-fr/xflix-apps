@@ -9,6 +9,10 @@ object Catalog {
     private fun ep(n: Int, name: String, min: Int, synopsis: String, @DrawableRes still: Int) =
         Episode(n, name, min, synopsis, still)
 
+    // Durasi belum diketahui
+    private fun yt(n: Int, name: String, videoId: String, @DrawableRes still: Int) =
+        Episode(n, name, 0, "", still, youtubeId = videoId)
+
     val titles: List<Title> = listOf(
         Title(
             id = "sekolah_normal", name = "Sekolah Normal", kind = Kind.Series, year = 2026, rating = "13+",
@@ -54,6 +58,50 @@ object Catalog {
                         ),
                         ep(3, "ADA KEBENARAN YANG TIDAK BISA DIBUKTIKAN SECARA LOGIKA!!", 24, "", R.drawable.still_sains_rumah_editor_3),
                         ep(4, "1000 TAHUN YANG LALU ILMUWAN INI MENGUKUR BESARNYA BUMI, HASILNYA…", 21, "", R.drawable.still_sains_rumah_editor_4),
+                    )
+                ),
+            ),
+        ),
+        Title(
+            id = "buruk_sangka", name = "Buruk Sangka", kind = Kind.Series, year = 2026, rating = "18+",
+            genres = setOf(Genre.Comedy),
+            moods = listOf("Komedi", "MLI"),
+            synopsis = "Buruk Sangka dari kanal MLI, diputar langsung dari YouTube.",
+            cast = emptyList(), creator = "MLI",
+            poster = R.drawable.poster_buruk_sangka, backdrop = R.drawable.backdrop_buruk_sangka,
+            tint = Color(0xFF7A2E1E), style = TitleStyle.Condensed,
+            seasons = listOf(
+                Season(1, listOf(yt(1, "Teletabis L*BT!", "q1UgIuICMKE", R.drawable.still_buruk_sangka_1))),
+            ),
+        ),
+        Title(
+            id = "why_dakwah_tretan_vol1", name = "Why Dakwah Tretan Vol. 1", kind = Kind.Series, year = 2026, rating = "18+",
+            genres = setOf(Genre.Comedy),
+            moods = listOf("Komedi", "Tretan Muslim"),
+            synopsis = "Kompilasi dakwah Tretan Muslim dari kanal Sarjana Deathcore, diputar langsung dari YouTube.",
+            cast = emptyList(), creator = "Sarjana Deathcore",
+            poster = R.drawable.poster_why_dakwah_tretan_vol1, backdrop = R.drawable.backdrop_why_dakwah_tretan_vol1,
+            tint = Color(0xFF2E3A40), style = TitleStyle.Wide,
+            seasons = listOf(
+                Season(
+                    1, listOf(
+                        yt(1, "KOMPILASI TRETAN MUSLIM DAKWAH MODE ULTIMATE VER.", "9T05KaRWWow", R.drawable.still_why_dakwah_tretan_vol1_1),
+                    )
+                ),
+            ),
+        ),
+        Title(
+            id = "why_dakwah_tretan_vol2", name = "Why Dakwah Tretan Vol. 2", kind = Kind.Series, year = 2026, rating = "18+",
+            genres = setOf(Genre.Comedy),
+            moods = listOf("Komedi", "Coki Pardede"),
+            synopsis = "Kompilasi dakwah Coki dari kanal Sarjana Deathcore, diputar langsung dari YouTube.",
+            cast = emptyList(), creator = "Sarjana Deathcore",
+            poster = R.drawable.poster_why_dakwah_tretan_vol2, backdrop = R.drawable.backdrop_why_dakwah_tretan_vol2,
+            tint = Color(0xFF8A3A12), style = TitleStyle.Wide,
+            seasons = listOf(
+                Season(
+                    1, listOf(
+                        yt(1, "KOMPILASI DAKWAH COKI ULTIMATE MORAL BREAKER VER", "TMi24hO4qQ0", R.drawable.still_why_dakwah_tretan_vol2_1),
                     )
                 ),
             ),

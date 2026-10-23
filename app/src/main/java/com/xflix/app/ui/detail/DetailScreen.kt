@@ -92,6 +92,7 @@ import com.xflix.app.ui.components.XButton
 import com.xflix.app.ui.components.XButtonStyle
 import com.xflix.app.ui.components.XImage
 import com.xflix.app.ui.components.XMark
+import com.xflix.app.ui.components.rememberOnline
 import com.xflix.app.ui.components.runtimeText
 import com.xflix.app.ui.home.ListIcon
 import com.xflix.app.ui.icons.XIcons
@@ -337,6 +338,14 @@ private fun DetailInfo(title: Title, vm: XflixViewModel, onPlay: () -> Unit, onS
                 )
             }
         }
+        if (title.streaming) {
+            val online = rememberOnline()
+            Spacer(Modifier.height(Space.s))
+            Text(
+                stringResource(if (online) R.string.detail_streaming else R.string.detail_streaming_offline),
+                style = XType.Caption.copy(fontSize = 12.5.sp, color = if (online) XColors.TextSecondary else XColors.Warning),
+            )
+        }
         Spacer(Modifier.height(Space.m))
 
         if (title.isUpcoming) {
@@ -361,8 +370,10 @@ private fun DetailInfo(title: Title, vm: XflixViewModel, onPlay: () -> Unit, onS
                 icon = XIcons.Play,
                 modifier = Modifier.fillMaxWidth(),
             )
-            Spacer(Modifier.height(Space.s))
-            DownloadButton(title, vm)
+            if (!title.streaming) {
+                Spacer(Modifier.height(Space.s))
+                DownloadButton(title, vm)
+            }
         }
 
         Spacer(Modifier.height(Space.m))
@@ -570,20 +581,24 @@ private fun EpisodeRow(
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
                 )
-                Spacer(Modifier.height(2.dp))
-                Text(stringResource(R.string.runtime_m, episode.minutes), style = XType.Caption)
+                if (episode.minutes > 0) {
+                    Spacer(Modifier.height(2.dp))
+                    Text(stringResource(R.string.runtime_m, episode.minutes), style = XType.Caption)
+                }
             }
-            Box(
-                Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .clickable { if (progress == null) vm.startDownload(downloadKey) },
-                contentAlignment = Alignment.Center,
-            ) {
-                if (progress == null) {
-                    Icon(XIcons.Download, contentDescription = stringResource(R.string.action_download), tint = Color.White, modifier = Modifier.size(22.dp))
-                } else {
-                    DownloadRing(progress, if (progress >= 1f) 1f else 0f, Modifier.size(24.dp))
+            if (episode.youtubeId == null) {
+                Box(
+                    Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .clickable { if (progress == null) vm.startDownload(downloadKey) },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    if (progress == null) {
+                        Icon(XIcons.Download, contentDescription = stringResource(R.string.action_download), tint = Color.White, modifier = Modifier.size(22.dp))
+                    } else {
+                        DownloadRing(progress, if (progress >= 1f) 1f else 0f, Modifier.size(24.dp))
+                    }
                 }
             }
         }

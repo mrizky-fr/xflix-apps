@@ -3,7 +3,9 @@ package com.xflix.app.ui.player
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.net.Uri
 import android.view.WindowManager
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -85,14 +87,22 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.options.IFramePlayerOptions
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import com.xflix.app.R
 import com.xflix.app.data.Catalog
 import com.xflix.app.data.Episode
 import com.xflix.app.data.Kind
 import com.xflix.app.data.LocalMedia
+import com.xflix.app.data.Title
 import com.xflix.app.ui.components.BarIcon
 import com.xflix.app.ui.components.LocalToaster
+import com.xflix.app.ui.components.XButton
 import com.xflix.app.ui.components.XImage
+import com.xflix.app.ui.components.rememberOnline
 import com.xflix.app.ui.icons.XIcons
 import com.xflix.app.ui.theme.Motion
 import com.xflix.app.ui.theme.Space
@@ -108,7 +118,7 @@ private const val SeekSeconds = 10
 
 private data class SeekFlash(val forward: Boolean, val id: Long)
 
-/** Pemutar video dari penyimpanan HP */
+/** Offline dari APK, atau YouTube */
 @Composable
 fun PlayerScreen(
     id: String,
@@ -116,8 +126,146 @@ fun PlayerScreen(
     startEpisode: Int,
     onBack: () -> Unit,
 ) {
-    val context = LocalContext.current
     val title = remember(id) { Catalog.title(id) }
+    if (title.streaming) {
+        YouTubePlayerScreen(title, startSeason, startEpisode, onBack)
+    } else {
+        LocalPlayerScreen(title, startSeason, startEpisode, onBack)
+    }
+}
+
+@Composable
+private fun YouTubePlayerScreen(title: Title, startSeason: Int, startEpisode: Int, onBack: () -> Unit) {
+    val context = LocalContext.current
+    val episode = title.seasons.getOrNull(startSeason - 1)?.episodes?.getOrNull(startEpisode - 1)
+    val videoId = episode?.youtubeId
+    val online = rememberOnline()
+    var started by rememberSaveable { mutableStateOf(false) }
+    var failed by remember { mutableStateOf(false) }
+    // Mulai begitu internet ada
+    LaunchedEffect(online) { if (online) started = true }
+
+    ImmersiveLandscape()
+
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+    ) {
+        if (started && videoId != null && !failed) {
+            YouTubeView(videoId, onError = { failed = true }, modifier = Modifier.fillMaxSize())
+        } else {
+            XImage(
+                id = title.backdrop,
+                displayWidth = 900.dp,
+                eager = true,
+                placeholder = Color.Black,
+                modifier = Modifier.fillMaxSize(),
+            )
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.6f))
+            )
+        }
+        when {
+            videoId == null -> PlayerNotice(
+                heading = stringResource(R.string.player_missing_title),
+                body = stringResource(R.string.player_missing_body),
+                onBack = onBack,
+            )
+            !started -> PlayerNotice(
+                heading = stringResource(R.string.player_offline_title),
+                body = stringResource(R.string.player_offline_body),
+                onBack = onBack,
+            )
+            failed -> PlayerNotice(
+                heading = stringResource(R.string.player_failed_title),
+                body = stringResource(R.string.player_youtube_failed_body),
+                onBack = onBack,
+                action = stringResource(R.string.player_open_youtube),
+                onAction = {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=$videoId")))
+                },
+            )
+            else -> Box(
+                Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = Space.xl, vertical = Space.m)
+            ) {
+                BarIcon(
+                    XIcons.Back,
+                    stringResource(R.string.action_back),
+                    onBack,
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(Color.Black.copy(alpha = 0.45f)),
+                )
+                // Putus di tengah, player menunggu
+                if (!online) {
+                    Text(
+                        stringResource(R.string.player_connection_lost),
+                        style = XType.Label,
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .clip(CircleShape)
+                            .background(Color.Black.copy(alpha = 0.7f))
+                            .padding(horizontal = Space.l, vertical = Space.s),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun YouTubeView(videoId: String, onError: () -> Unit, modifier: Modifier = Modifier) {
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val reportError by rememberUpdatedState(onError)
+    AndroidView(
+        modifier = modifier,
+        factory = { ctx ->
+            YouTubePlayerView(ctx).apply {
+                enableAutomaticInitialization = false
+                lifecycle.addObserver(this)
+                val options = IFramePlayerOptions.Builder(ctx)
+                    .controls(1)
+                    .rel(0)
+                    .ivLoadPolicy(3)
+                    .fullscreen(0)
+                    .build()
+                initialize(
+                    object : AbstractYouTubePlayerListener() {
+                        override fun onReady(youTubePlayer: YouTubePlayer) {
+                            youTubePlayer.loadVideo(videoId, 0f)
+                        }
+
+                        override fun onError(youTubePlayer: YouTubePlayer, error: PlayerConstants.PlayerError) {
+                            reportError()
+                        }
+                    },
+                    true,
+                    options,
+                )
+            }
+        },
+        onRelease = { view ->
+            lifecycle.removeObserver(view)
+            view.release()
+        },
+    )
+}
+
+/** Pemutar video dari dalam APK */
+@Composable
+private fun LocalPlayerScreen(
+    title: Title,
+    startSeason: Int,
+    startEpisode: Int,
+    onBack: () -> Unit,
+) {
+    val context = LocalContext.current
+    val id = title.id
     // Ganti episode tanpa navigasi
     var season by rememberSaveable { mutableIntStateOf(startSeason) }
     var episode by rememberSaveable { mutableIntStateOf(startEpisode) }
@@ -403,7 +551,13 @@ fun PlayerScreen(
 }
 
 @Composable
-private fun PlayerNotice(heading: String, body: String, onBack: () -> Unit) {
+private fun PlayerNotice(
+    heading: String,
+    body: String,
+    onBack: () -> Unit,
+    action: String? = null,
+    onAction: () -> Unit = {},
+) {
     Box(
         Modifier
             .fillMaxSize()
@@ -423,6 +577,10 @@ private fun PlayerNotice(heading: String, body: String, onBack: () -> Unit) {
                 style = XType.Body.copy(color = XColors.TextSecondary),
                 textAlign = TextAlign.Center,
             )
+            if (action != null) {
+                Spacer(Modifier.height(Space.l))
+                XButton(action, onAction, Modifier.width(240.dp))
+            }
         }
     }
 }

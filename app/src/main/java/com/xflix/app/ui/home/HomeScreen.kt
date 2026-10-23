@@ -125,6 +125,7 @@ private fun buildRows(filter: HomeFilter, myList: List<String>): List<HomeRow> {
         HomeRow("top10", top10Label, RowType.Top10, Catalog.top10.filter(match)),
         HomeRow("originals", R.string.row_originals, RowType.Tall, pool.filter { it.original }),
         HomeRow("new", R.string.row_new, RowType.Poster, pool.sortedByDescending { it.year }.take(10)),
+        HomeRow("comedy", R.string.row_comedy, RowType.Poster, genres(Genre.Comedy)),
         HomeRow("horror", R.string.row_horror, RowType.Poster, genres(Genre.Horror)),
         HomeRow("thriller", R.string.row_thriller, RowType.Poster, genres(Genre.Thriller, Genre.Mystery)),
         HomeRow("romance", R.string.row_romance, RowType.Poster, genres(Genre.Romance, Genre.Drama)),

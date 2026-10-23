@@ -100,6 +100,7 @@
     <string name="row_thriller">Thriller Penuh Teka-teki</string>
     <string name="row_romance">Kisah Cinta &amp; Drama</string>
     <string name="row_docs">Dokumenter &amp; Sains</string>
+    <string name="row_comedy">Komedi Bikin Ngakak</string>
     <string name="row_action">Aksi &amp; Kriminal</string>
     <string name="tag_new_episodes">Episode Baru</string>
     <string name="minutes_left">Sisa %1$dm</string>
@@ -186,6 +187,13 @@
     <string name="player_missing_body">Video episode ini belum ada di dalam aplikasi.</string>
     <string name="player_failed_title">Video tidak bisa diputar</string>
     <string name="player_failed_body">File videonya rusak atau tidak bisa dibaca.</string>
+    <string name="player_offline_title">Butuh koneksi internet</string>
+    <string name="player_offline_body">Serial ini diputar langsung dari YouTube. Nyalakan data seluler atau Wi-Fi, video akan mulai otomatis.</string>
+    <string name="player_youtube_failed_body">Video ini tidak bisa diputar di dalam aplikasi.</string>
+    <string name="player_open_youtube">Buka di YouTube</string>
+    <string name="player_connection_lost">Koneksi terputus, menunggu internet…</string>
+    <string name="detail_streaming">Streaming dari YouTube · butuh internet</string>
+    <string name="detail_streaming_offline">Sedang offline · serial ini butuh internet</string>
 
     <!-- Fitur yang belum tersambung -->
     <string name="toast_cast">Transmisi belum tersedia di versi demo</string>

@@ -32,6 +32,8 @@ data class Episode(
     val minutes: Int,
     val synopsis: String,
     @param:DrawableRes val still: Int,
+    // Diputar dari YouTube, butuh internet
+    val youtubeId: String? = null,
 )
 
 @Immutable
@@ -61,6 +63,7 @@ data class Title(
     val premiere: LocalDate? = null,
 ) {
     val isUpcoming: Boolean get() = premiere != null
+    val streaming: Boolean get() = seasons.any { s -> s.episodes.any { it.youtubeId != null } }
 }
 
 enum class Face { Smile, Grin, Wink, Calm, Kids }
