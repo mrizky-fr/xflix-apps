@@ -41,7 +41,7 @@
     <string name="action_sign_in">Masuk</string>
     <string name="action_sign_in_caps">MASUK</string>
     <string name="action_sign_in_code">Gunakan Kode Masuk</string>
-    <string name="action_switch_profile">Ganti profil</string>
+    <string name="action_switch_profile">Ganti platform</string>
     <string name="action_voice">Cari dengan suara</string>
 
     <!-- Onboarding -->
@@ -79,12 +79,9 @@
     <string name="strength_strong">Kuat</string>
 
     <!-- Profil -->
-    <string name="profiles_title">Siapa yang menonton?</string>
-    <string name="profiles_manage">Kelola Profil</string>
-    <string name="profiles_add">Tambah Profil</string>
+    <string name="profiles_title">Pilih Platform</string>
 
     <!-- Beranda -->
-    <string name="home_for">Untuk %1$s</string>
     <string name="chip_series">Serial</string>
     <string name="chip_movies">Film</string>
     <string name="chip_anime">Anime</string>
@@ -164,7 +161,7 @@
     <string name="my_downloads_count">%1$d judul di perangkat ini</string>
     <string name="my_liked">Serial &amp; Film yang Kamu Sukai</string>
     <string name="my_list_empty">Tambahkan judul ke Daftar Saya supaya gampang ditemukan lagi.</string>
-    <string name="my_manage_profiles">Kelola Profil</string>
+    <string name="my_manage_profiles">Ganti Platform</string>
     <string name="my_app_settings">Pengaturan Aplikasi</string>
     <string name="my_account">Akun</string>
     <string name="my_help">Bantuan</string>
@@ -208,8 +205,6 @@
     <string name="toast_privacy">Halaman privasi belum ditautkan di versi demo</string>
     <string name="toast_sign_in_code">Masuk dengan kode belum tersambung ke server</string>
     <string name="toast_forgot_password">Reset sandi belum tersambung ke server</string>
-    <string name="toast_add_profile">Tambah profil belum tersedia di versi demo</string>
-    <string name="toast_edit_profile">Edit profil %1$s belum tersedia di versi demo</string>
     <string name="toast_voice">Pencarian suara belum tersedia di versi demo</string>
     <string name="toast_audio">Pilihan audio &amp; subtitle belum tersedia di versi demo</string>
     <string name="toast_coming_soon">Menu ini belum tersedia di versi demo</string>

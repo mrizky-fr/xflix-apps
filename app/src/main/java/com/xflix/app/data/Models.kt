@@ -73,12 +73,14 @@ data class Title(
 ) {
     val isUpcoming: Boolean get() = premiere != null
     val streaming: Boolean get() = remoteSource != null
+    val platform: Platform get() = if (remoteSource == "youtube") Platform.XflixYT else Platform.Novaplay
 }
 
-enum class Face { Smile, Grin, Wink, Calm, Kids }
+// Sumber katalog yang dipilih
+enum class Platform { Novaplay, XflixYT }
 
 @Immutable
-data class Profile(val id: String, val name: String, val color: Color, val face: Face)
+data class Profile(val id: String, val name: String, val color: Color, val platform: Platform)
 
 @Immutable
 data class WatchProgress(

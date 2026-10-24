@@ -125,7 +125,7 @@ private fun buildRows(filter: HomeFilter, myList: List<String>): List<HomeRow> {
     }
     return listOf(
         HomeRow("continue", R.string.row_continue, RowType.Continue, Catalog.continueWatching.map { Catalog.title(it.titleId) }.filter(match)),
-        HomeRow("mylist", R.string.row_my_list, RowType.Poster, myList.map { Catalog.title(it) }.filter(match)),
+        HomeRow("mylist", R.string.row_my_list, RowType.Poster, myList.map { Catalog.title(it) }.filter { it.platform == Catalog.platform && match(it) }),
         HomeRow("top10", top10Label, RowType.Top10, Catalog.top10.filter(match)),
         HomeRow("originals", R.string.row_originals, RowType.Tall, pool.filter { it.original }),
         HomeRow("new", R.string.row_new, RowType.Poster, pool.sortedByDescending { it.year }.take(10)),
@@ -487,7 +487,7 @@ private fun HomeTopBar(
             XMark(22.dp)
             Spacer(Modifier.width(10.dp))
             Text(
-                stringResource(R.string.home_for, name),
+                name,
                 style = XType.Title.copy(fontSize = 19.sp),
                 modifier = Modifier.weight(1f),
                 maxLines = 1,

@@ -1,6 +1,9 @@
 package com.xflix.app.data
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import java.net.HttpURLConnection
 import java.net.URL
@@ -44,20 +47,18 @@ private fun JSONObject.words(key: String): List<String> = optJSONArray(key)?.let
 object Catalog {
     val titles = mutableStateListOf<Title>()
     val profiles = listOf(
-        Profile("raka", "Raka", Color(0xFF2F6FED), Face.Smile),
-        Profile("nadia", "Nadia", Color(0xFFF2B33D), Face.Grin),
-        Profile("bima", "Bima", Color(0xFFE5604D), Face.Wink),
-        Profile("sekar", "Sekar", Color(0xFF2BA36B), Face.Calm),
-        Profile("anak", "Anak-anak", Color(0xFF1B1B1B), Face.Kids),
+        Profile("novaplay", "Novaplay", Color(0xFF7C3AED), Platform.Novaplay),
+        Profile("xflix-yt", "Xflix-YT", Color.Black, Platform.XflixYT),
     )
+    var platform by mutableStateOf(Platform.Novaplay)
     val continueWatching = emptyList<WatchProgress>()
     val notices = emptyList<Notice>()
 
-    val available: List<Title> get() = titles
+    val available: List<Title> get() = titles.filter { it.platform == platform }
     val upcoming: List<Title> get() = emptyList()
-    val top10: List<Title> get() = titles.filter { it.top10 != null }.sortedBy { it.top10 }
+    val top10: List<Title> get() = available.filter { it.top10 != null }.sortedBy { it.top10 }
     fun title(id: String): Title = titles.first { it.id == id }
-    fun similar(to: Title, limit: Int = 9): List<Title> = titles
+    fun similar(to: Title, limit: Int = 9): List<Title> = available
         .asSequence().filter { it.id != to.id }
         .sortedByDescending { (it.genres intersect to.genres).size }
         .take(limit).toList()
@@ -65,7 +66,7 @@ object Catalog {
     fun search(query: String): List<Title> {
         val q = query.trim().lowercase()
         if (q.isEmpty()) return emptyList()
-        return titles.filter { it.name.lowercase().contains(q) || it.moods.any { m -> m.lowercase().contains(q) } }
+        return available.filter { it.name.lowercase().contains(q) || it.moods.any { m -> m.lowercase().contains(q) } }
     }
 
     /** Acak per sesi, stabil selama app terbuka */
@@ -87,10 +88,13 @@ object Catalog {
         val all = (popular + library + youtube).distinctBy { it.id }
         if (all.isEmpty()) error("Katalog NOVA Play masih kosong.")
         seed = Random.nextInt()
-        // Top 10 acak dari judul unggulan
-        val picks = (popular + youtube).map { it.id }.distinct().shuffled(Random(seed)).take(10)
+        // Top 10 acak per platform
+        val random = Random(seed)
+        val rank = listOf(popular, youtube).flatMap { group ->
+            group.map { it.id }.distinct().shuffled(random).take(10).mapIndexed { i, id -> id to i + 1 }
+        }.toMap()
         titles.clear()
-        titles.addAll(all.map { title -> title.copy(top10 = picks.indexOf(title.id).takeIf { it >= 0 }?.plus(1)) })
+        titles.addAll(all.map { title -> title.copy(top10 = rank[title.id]) })
     }
 
     suspend fun ensureDetails(id: String): Title {

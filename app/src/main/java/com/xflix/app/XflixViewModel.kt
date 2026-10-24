@@ -60,6 +60,7 @@ class XflixViewModel : ViewModel() {
 
     fun selectProfile(next: Profile) {
         profile = next
+        Catalog.platform = next.platform
         homeReady = false
         homeFilter = HomeFilter()
         refreshCatalog()
