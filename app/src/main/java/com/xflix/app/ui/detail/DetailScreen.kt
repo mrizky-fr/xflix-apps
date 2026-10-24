@@ -43,6 +43,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -117,8 +118,9 @@ fun DetailScreen(
     onPlay: (Title, Int, Int) -> Unit,
     onOpenTitle: (Title, String?) -> Unit,
 ) {
-    val title = remember(id) { Catalog.title(id) }
+    val title = Catalog.title(id)
     val similar = remember(id) { Catalog.similar(title) }
+    LaunchedEffect(id) { runCatching { Catalog.ensureDetails(id) } }
     val isSeries = title.kind == Kind.Series
     val toaster = LocalToaster.current
     val context = LocalContext.current
@@ -261,6 +263,7 @@ private fun DetailHero(title: Title, sharedKey: String?, muted: Boolean, onToggl
     ) {
         XImage(
             id = title.backdrop,
+            url = title.imageUrl,
             displayWidth = 420.dp,
             eager = true,
             placeholder = Color.Black,
@@ -562,7 +565,7 @@ private fun EpisodeRow(
                     .clickable(onClick = onPlay),
                 contentAlignment = Alignment.Center,
             ) {
-                XImage(episode.still, Modifier.fillMaxSize(), displayWidth = 124.dp)
+                XImage(episode.still, Modifier.fillMaxSize(), displayWidth = 124.dp, url = episode.imageUrl)
                 Box(
                     Modifier
                         .size(30.dp)
@@ -584,21 +587,6 @@ private fun EpisodeRow(
                 if (episode.minutes > 0) {
                     Spacer(Modifier.height(2.dp))
                     Text(stringResource(R.string.runtime_m, episode.minutes), style = XType.Caption)
-                }
-            }
-            if (episode.youtubeId == null) {
-                Box(
-                    Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .clickable { if (progress == null) vm.startDownload(downloadKey) },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    if (progress == null) {
-                        Icon(XIcons.Download, contentDescription = stringResource(R.string.action_download), tint = Color.White, modifier = Modifier.size(22.dp))
-                    } else {
-                        DownloadRing(progress, if (progress >= 1f) 1f else 0f, Modifier.size(24.dp))
-                    }
                 }
             }
         }

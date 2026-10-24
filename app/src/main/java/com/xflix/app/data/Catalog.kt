@@ -1,249 +1,47 @@
 package com.xflix.app.data
 
-import androidx.annotation.DrawableRes
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.graphics.Color
-import com.xflix.app.R
+import java.net.HttpURLConnection
+import java.net.URL
+import java.time.LocalDate
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import org.json.JSONObject
 
-object Catalog {
+/** Public NOVA Play API. No video or catalog snapshot is packaged in the APK. */
+object NovaApi {
+    const val BASE = "https://novaplay.asia"
 
-    private fun ep(n: Int, name: String, min: Int, synopsis: String, @DrawableRes still: Int) =
-        Episode(n, name, min, synopsis, still)
-
-    // Durasi 0 berarti belum diketahui
-    private fun yt(n: Int, name: String, videoId: String, @DrawableRes still: Int, minutes: Int = 0) =
-        Episode(n, name, minutes, "", still, youtubeId = videoId)
-
-    // Satu video Kamar Film, satu serial
-    private fun kamarFilm(
-        id: String,
-        name: String,
-        videoId: String,
-        episode: String,
-        genres: Set<Genre>,
-        moods: List<String>,
-        @DrawableRes poster: Int,
-        @DrawableRes backdrop: Int,
-        @DrawableRes still: Int,
-        tint: Color,
-        style: TitleStyle,
-    ) = Title(
-        id = id, name = name, kind = Kind.Series, year = 2026, rating = "13+",
-        genres = genres, moods = moods,
-        synopsis = "Dari kanal Kamar Film, diputar langsung dari YouTube.",
-        cast = emptyList(), creator = "Kamar Film",
-        poster = poster, backdrop = backdrop, tint = tint, style = style,
-        seasons = listOf(Season(1, listOf(yt(1, episode, videoId, still)))),
-    )
-
-    val titles: List<Title> = listOf(
-        Title(
-            id = "sekolah_normal", name = "Sekolah Normal", kind = Kind.Series, year = 2026, rating = "13+",
-            genres = setOf(Genre.Comedy),
-            moods = listOf("Komedi", "Sekolah", "Santai"),
-            synopsis = "Serial komedi sekolah dari Tretan Universe.",
-            cast = emptyList(), creator = "Tretan Universe",
-            poster = R.drawable.poster_sekolah_normal, backdrop = R.drawable.backdrop_sekolah_normal,
-            tint = Color(0xFF2F5A2B), style = TitleStyle.Condensed,
-            top10 = 1, newEpisodes = true,
-            seasons = listOf(
-                Season(
-                    1, listOf(
-                        ep(1, "Guru Keanu VS Murid Plenger⁉️", 17, "", R.drawable.still_sekolah_normal_1),
-                        ep(2, "Kesabaran Guru Keanu Sudah Habis⁉️", 21, "", R.drawable.still_sekolah_normal_2),
-                        ep(3, "Sule Pusing Ngajarin Sugeng & Opik", 19, "", R.drawable.still_sekolah_normal_3),
-                        ep(4, "Sule Hilang Kesabaran!", 21, "", R.drawable.still_sekolah_normal_4),
-                    )
-                ),
-            ),
-        ),
-        Title(
-            id = "sains_rumah_editor", name = "Sains Rumah Editor", kind = Kind.Series, year = 2026, rating = "SU",
-            genres = setOf(Genre.Documentary),
-            moods = listOf("Sains", "Edukasi", "Matematika"),
-            synopsis = "Serial sains dari Rumah Editor.",
-            cast = emptyList(), creator = "Rumah Editor",
-            poster = R.drawable.poster_sains_rumah_editor, backdrop = R.drawable.backdrop_sains_rumah_editor,
-            tint = Color(0xFF173A7A), style = TitleStyle.Serif,
-            top10 = 2,
-            seasons = listOf(
-                Season(
-                    1, listOf(
-                        ep(
-                            1, "MENGAPA PARA ILMUWAN MEMPERCAYAI SESUATU \"YANG TAK TERLIHAT\"??", 19,
-                            "Atom-atom yang katanya adalah materi penyusun alam ini ternyata hanyalah 5% dari seluruh materi. Sisanya adalah materi \"tak kasatmata\" yang disebut para ilmuwan \"materi gelap\". Tapi bagaimana mereka yakin materi ini ada?",
-                            R.drawable.still_sains_rumah_editor_1,
-                        ),
-                        ep(
-                            2, "TIDAK TERJAWAB SELAMA RIBUAN TAHUN!! INILAH ALASAN MENGAPA SARANG LEBAH BERBENTUK HEKSAGONAL!!", 17,
-                            "Mengapa sarang lebah berbentuk heksagonal? Ternyata alasannya sangat matematis, dan baru dibuktikan seorang matematikawan pada tahun 1999 setelah ribuan tahun tidak terjawab.",
-                            R.drawable.still_sains_rumah_editor_2,
-                        ),
-                        ep(3, "ADA KEBENARAN YANG TIDAK BISA DIBUKTIKAN SECARA LOGIKA!!", 24, "", R.drawable.still_sains_rumah_editor_3),
-                        ep(4, "1000 TAHUN YANG LALU ILMUWAN INI MENGUKUR BESARNYA BUMI, HASILNYA…", 21, "", R.drawable.still_sains_rumah_editor_4),
-                    )
-                ),
-            ),
-        ),
-        Title(
-            id = "buruk_sangka", name = "Buruk Sangka", kind = Kind.Series, year = 2026, rating = "18+",
-            genres = setOf(Genre.Comedy),
-            moods = listOf("Komedi", "MLI"),
-            synopsis = "Buruk Sangka dari kanal MLI, diputar langsung dari YouTube.",
-            cast = emptyList(), creator = "MLI",
-            poster = R.drawable.poster_buruk_sangka, backdrop = R.drawable.backdrop_buruk_sangka,
-            tint = Color(0xFF7A2E1E), style = TitleStyle.Condensed,
-            seasons = listOf(
-                Season(1, listOf(yt(1, "Teletabis L*BT!", "q1UgIuICMKE", R.drawable.still_buruk_sangka_1))),
-            ),
-        ),
-        Title(
-            id = "why_dakwah_tretan_vol1", name = "Why Dakwah Tretan Vol. 1", kind = Kind.Series, year = 2026, rating = "18+",
-            genres = setOf(Genre.Comedy),
-            moods = listOf("Komedi", "Tretan Muslim"),
-            synopsis = "Kompilasi dakwah Tretan Muslim dari kanal Sarjana Deathcore, diputar langsung dari YouTube.",
-            cast = emptyList(), creator = "Sarjana Deathcore",
-            poster = R.drawable.poster_why_dakwah_tretan_vol1, backdrop = R.drawable.backdrop_why_dakwah_tretan_vol1,
-            tint = Color(0xFF2E3A40), style = TitleStyle.Wide,
-            seasons = listOf(
-                Season(
-                    1, listOf(
-                        yt(1, "KOMPILASI TRETAN MUSLIM DAKWAH MODE ULTIMATE VER.", "9T05KaRWWow", R.drawable.still_why_dakwah_tretan_vol1_1),
-                    )
-                ),
-            ),
-        ),
-        Title(
-            id = "why_dakwah_tretan_vol2", name = "Why Dakwah Tretan Vol. 2", kind = Kind.Series, year = 2026, rating = "18+",
-            genres = setOf(Genre.Comedy),
-            moods = listOf("Komedi", "Coki Pardede"),
-            synopsis = "Kompilasi dakwah Coki dari kanal Sarjana Deathcore, diputar langsung dari YouTube.",
-            cast = emptyList(), creator = "Sarjana Deathcore",
-            poster = R.drawable.poster_why_dakwah_tretan_vol2, backdrop = R.drawable.backdrop_why_dakwah_tretan_vol2,
-            tint = Color(0xFF8A3A12), style = TitleStyle.Wide,
-            seasons = listOf(
-                Season(
-                    1, listOf(
-                        yt(1, "KOMPILASI DAKWAH COKI ULTIMATE MORAL BREAKER VER", "TMi24hO4qQ0", R.drawable.still_why_dakwah_tretan_vol2_1),
-                    )
-                ),
-            ),
-        ),
-        Title(
-            id = "pwk_podcast", name = "PWK Podcast", kind = Kind.Series, year = 2026, rating = "18+",
-            genres = setOf(Genre.Comedy),
-            moods = listOf("Podcast", "Komedi", "Praz Teguh"),
-            synopsis = "Podcast Warung Kopi dari kanal HAS Creative, diputar langsung dari YouTube.",
-            cast = emptyList(), creator = "HAS Creative",
-            poster = R.drawable.poster_pwk_podcast, backdrop = R.drawable.backdrop_pwk_podcast,
-            tint = Color(0xFF2D5A27), style = TitleStyle.Condensed,
-            newEpisodes = true,
-            seasons = listOf(
-                Season(
-                    1, listOf(
-                        yt(1, "JARANG TAMPIL BERSAMA, HUBUNGAN COKI MUSLIM DAN HABIB JA'FAR RENGGANG?!", "lqHDo13Ocl0", R.drawable.still_pwk_podcast_1, minutes = 77),
-                        yt(2, "KLARIFIKASI DEDE INOEN KERACUNAN T4I KUDA, SAMPE DI INFUS DI RUMAH SAKIT!!", "OrZUWnILIps", R.drawable.still_pwk_podcast_2, minutes = 69),
-                        yt(3, "AYAH BANGKRUT & JADI TULANG PUNGGUNG, PESULAP MERAH GAK SEMPET WUJUDIN CITA-CITA JADI SPIDERMAN", "UioVRDFab3c", R.drawable.still_pwk_podcast_3, minutes = 79),
-                    )
-                ),
-            ),
-        ),
-        kamarFilm(
-            id = "kf_reinkarnasi", name = "Teori Reinkarnasi", videoId = "RMaYd-hYgJ0",
-            episode = "SECARA SAINS APAKAH TEORI REINKARNASI BISA DIBUKTIKAN?",
-            genres = setOf(Genre.Documentary), moods = listOf("Sains", "Misteri"),
-            poster = R.drawable.poster_kf_reinkarnasi, backdrop = R.drawable.backdrop_kf_reinkarnasi, still = R.drawable.still_kf_reinkarnasi_1,
-            tint = Color(0xFF482624), style = TitleStyle.Serif,
-        ),
-        kamarFilm(
-            id = "kf_sutan_sjahrir", name = "Sutan Sjahrir", videoId = "qZHEHzkNsGo",
-            episode = "Demokrat Sejati yang Dihabisi Penguasa: Mengapa Sejarah Sengaja Mengaburkan Sutan Sjahrir?",
-            genres = setOf(Genre.Documentary), moods = listOf("Sejarah", "Politik"),
-            poster = R.drawable.poster_kf_sutan_sjahrir, backdrop = R.drawable.backdrop_kf_sutan_sjahrir, still = R.drawable.still_kf_sutan_sjahrir_1,
-            tint = Color(0xFF54312F), style = TitleStyle.Condensed,
-        ),
-        kamarFilm(
-            id = "kf_alam_semesta", name = "Sendirian di Alam Semesta?", videoId = "GmQ3Q6xJqBg",
-            episode = "Benarkah Kita Sendirian di Alam Semesta yang Seluas Ini? Mari Menghitung Kemungkinannya!!!",
-            genres = setOf(Genre.Documentary), moods = listOf("Sains", "Antariksa"),
-            poster = R.drawable.poster_kf_alam_semesta, backdrop = R.drawable.backdrop_kf_alam_semesta, still = R.drawable.still_kf_alam_semesta_1,
-            tint = Color(0xFF4E5357), style = TitleStyle.Serif,
-        ),
-        kamarFilm(
-            id = "kf_area_51", name = "Rahasia Area 51", videoId = "XWEwrV3nOaY",
-            episode = "Kenapa Pemerintah Amerika Mati-Matian Sembunyikan Apa yang Sebenarnya Ada di Area 51?",
-            genres = setOf(Genre.Documentary, Genre.Mystery), moods = listOf("Misteri", "Konspirasi"),
-            poster = R.drawable.poster_kf_area_51, backdrop = R.drawable.backdrop_kf_area_51, still = R.drawable.still_kf_area_51_1,
-            tint = Color(0xFF5B4B4B), style = TitleStyle.Condensed,
-        ),
-        kamarFilm(
-            id = "kf_napas_bukti", name = "Napas Jadi Bukti", videoId = "LHvEKZU_Ksc",
-            episode = "TIDAK AKAN LAGI KASUS TAK TERPECAHKAN - NAFAS PUN BISA MENJADI BUKTI SEKARANG",
-            genres = setOf(Genre.Documentary, Genre.Crime), moods = listOf("Forensik", "Sains"),
-            poster = R.drawable.poster_kf_napas_bukti, backdrop = R.drawable.backdrop_kf_napas_bukti, still = R.drawable.still_kf_napas_bukti_1,
-            tint = Color(0xFF5F5A56), style = TitleStyle.Wide,
-        ),
-        kamarFilm(
-            id = "kf_omuamua", name = "Misteri Omuamua", videoId = "kYfN9xT_Ld8",
-            episode = "600.000 Tahun Perjalanan Menuju Bumi! Siapa Sebenarnya yang Mengirim Omuamua?",
-            genres = setOf(Genre.Documentary, Genre.Mystery), moods = listOf("Antariksa", "Misteri"),
-            poster = R.drawable.poster_kf_omuamua, backdrop = R.drawable.backdrop_kf_omuamua, still = R.drawable.still_kf_omuamua_1,
-            tint = Color(0xFF1A1718), style = TitleStyle.Wide,
-        ),
-        kamarFilm(
-            id = "kf_fbi_trump", name = "Ditangkap FBI, Dibebaskan Trump", videoId = "lhwf8J-payY",
-            episode = "DITANGKAP FBI - DIPENJARA SEUMUR HIDUP - LALU DIBEBASKAN OLEH TRUMP - SIAPA ANAK MUDA INI?",
-            genres = setOf(Genre.Documentary, Genre.Crime), moods = listOf("Kriminal", "Kisah Nyata"),
-            poster = R.drawable.poster_kf_fbi_trump, backdrop = R.drawable.backdrop_kf_fbi_trump, still = R.drawable.still_kf_fbi_trump_1,
-            tint = Color(0xFF5F5553), style = TitleStyle.Condensed,
-        ),
-        kamarFilm(
-            id = "kf_gempa_besar", name = "Gempa Besar", videoId = "2wkhktYASdE",
-            episode = "SEBERAPA DEKAT GEMPA BESAR ITU AKAN DATANG?",
-            genres = setOf(Genre.Documentary), moods = listOf("Sains", "Bencana"),
-            poster = R.drawable.poster_kf_gempa_besar, backdrop = R.drawable.backdrop_kf_gempa_besar, still = R.drawable.still_kf_gempa_besar_1,
-            tint = Color(0xFF373E42), style = TitleStyle.Condensed,
-        ),
-        kamarFilm(
-            id = "kf_perampokan", name = "Perampokan Paling Mulus", videoId = "dYlu1jUchzo",
-            episode = "PERAMPOKAN BESAR PALING MULUS INI JUSTRU BERAKHIR TRAGIS DENGAN CARA SEPELE. APA YANG TERJADI?",
-            genres = setOf(Genre.Documentary, Genre.Crime), moods = listOf("Kriminal", "Kisah Nyata"),
-            poster = R.drawable.poster_kf_perampokan, backdrop = R.drawable.backdrop_kf_perampokan, still = R.drawable.still_kf_perampokan_1,
-            tint = Color(0xFF4A3030), style = TitleStyle.Serif,
-        ),
-        kamarFilm(
-            id = "kf_pemimpin_sekte", name = "Pemimpin Sekte", videoId = "VPlMTCds6QA",
-            episode = "Pemimpin Sekte ini Memutus Logika Pengikutnya dari Realitas dengan cara yang Mengerikan",
-            genres = setOf(Genre.Documentary, Genre.Crime), moods = listOf("Psikologi", "Kisah Nyata"),
-            poster = R.drawable.poster_kf_pemimpin_sekte, backdrop = R.drawable.backdrop_kf_pemimpin_sekte, still = R.drawable.still_kf_pemimpin_sekte_1,
-            tint = Color(0xFF4D474A), style = TitleStyle.Serif,
-        ),
-    )
-
-    private val byId = titles.associateBy { it.id }
-
-    fun title(id: String): Title = byId.getValue(id)
-
-    val available: List<Title> = titles.filterNot { it.isUpcoming }
-
-    val upcoming: List<Title> = titles.filter { it.isUpcoming }.sortedBy { it.premiere }
-
-    val top10: List<Title> = available.filter { it.top10 != null }.sortedBy { it.top10 }
-
-    fun similar(to: Title, limit: Int = 9): List<Title> = available
-        .filter { it.id != to.id }
-        .sortedByDescending { (it.genres intersect to.genres).size }
-        .take(limit)
-
-    fun search(query: String): List<Title> {
-        val q = query.trim().lowercase()
-        if (q.isEmpty()) return emptyList()
-        return titles.filter { t ->
-            t.name.lowercase().contains(q) ||
-                t.moods.any { it.lowercase().contains(q) } ||
-                t.cast.any { it.lowercase().contains(q) }
+    suspend fun get(path: String): JSONObject = withContext(Dispatchers.IO) {
+        require(path.startsWith("/api/"))
+        val connection = (URL(BASE + path).openConnection() as HttpURLConnection).apply {
+            connectTimeout = 12_000
+            readTimeout = 20_000
+            setRequestProperty("Accept", "application/json")
+        }
+        try {
+            val stream = if (connection.responseCode in 200..299) connection.inputStream else connection.errorStream
+            val body = stream?.bufferedReader()?.use { it.readText() }.orEmpty()
+            if (connection.responseCode !in 200..299) {
+                val message = runCatching { JSONObject(body).optString("error") }.getOrNull()
+                error(message?.takeIf { it.isNotBlank() } ?: "Server merespons HTTP ${connection.responseCode}")
+            }
+            JSONObject(body)
+        } finally {
+            connection.disconnect()
         }
     }
+}
 
+private fun JSONArray.objects(): List<JSONObject> = (0 until length()).mapNotNull { optJSONObject(it) }
+private fun JSONObject.words(key: String): List<String> = optJSONArray(key)?.let { array ->
+    (0 until array.length()).mapNotNull { array.optString(it).takeIf(String::isNotBlank) }
+}.orEmpty()
+
+object Catalog {
+    val titles = mutableStateListOf<Title>()
     val profiles = listOf(
         Profile("raka", "Raka", Color(0xFF2F6FED), Face.Smile),
         Profile("nadia", "Nadia", Color(0xFFF2B33D), Face.Grin),
@@ -251,13 +49,110 @@ object Catalog {
         Profile("sekar", "Sekar", Color(0xFF2BA36B), Face.Calm),
         Profile("anak", "Anak-anak", Color(0xFF1B1B1B), Face.Kids),
     )
-
     val continueWatching = emptyList<WatchProgress>()
+    val notices = emptyList<Notice>()
 
-    val notices = listOf(
-        Notice("pwk_podcast", "Baru Ditambahkan", "PWK Podcast, 3 episode bareng Coki & Tretan, Dede Inoen, dan Pesulap Merah.", "Hari ini"),
-        Notice("kf_reinkarnasi", "Baru Ditambahkan", "10 video terbaru Kamar Film sudah bisa ditonton online.", "Hari ini"),
-        Notice("sains_rumah_editor", "Baru Ditambahkan", "Sains Rumah Editor, 4 episode sudah tersedia.", "Hari ini"),
-        Notice("sekolah_normal", "Baru Ditambahkan", "Sekolah Normal, 4 episode sudah tersedia.", "Hari ini"),
-    )
+    val available: List<Title> get() = titles
+    val upcoming: List<Title> get() = emptyList()
+    val top10: List<Title> get() = titles.filter { it.top10 != null }.sortedBy { it.top10 }
+    fun title(id: String): Title = titles.first { it.id == id }
+    fun similar(to: Title, limit: Int = 9): List<Title> = titles
+        .asSequence().filter { it.id != to.id }
+        .sortedByDescending { (it.genres intersect to.genres).size }
+        .take(limit).toList()
+
+    fun search(query: String): List<Title> {
+        val q = query.trim().lowercase()
+        if (q.isEmpty()) return emptyList()
+        return titles.filter { it.name.lowercase().contains(q) || it.moods.any { m -> m.lowercase().contains(q) } }
+    }
+
+    suspend fun refresh() {
+        val data = NovaApi.get("/api/catalog")
+        val all = buildList {
+            data.optJSONArray("movies")?.objects()?.forEachIndexed { i, item -> add(fromRemote(item, "film", i)) }
+            data.optJSONArray("dracin")?.objects()?.forEachIndexed { i, item -> add(fromRemote(item, "anime", i)) }
+            data.optJSONArray("serials")?.objects()?.forEachIndexed { i, item -> add(fromRemote(item, "anime", i)) }
+            data.optJSONArray("animeLibrary")?.objects()?.forEach { add(fromRemote(it, "anime", null)) }
+            data.optJSONArray("donghuaLibrary")?.objects()?.forEach { add(fromRemote(it, "anime", null)) }
+        }.distinctBy { it.id }
+        if (all.isEmpty()) error("Katalog NOVA Play masih kosong.")
+        titles.clear()
+        titles.addAll(all)
+    }
+
+    suspend fun ensureDetails(id: String): Title {
+        val current = title(id)
+        if (current.kind == Kind.Movie || current.seasons.firstOrNull()?.episodes?.firstOrNull()?.remoteId != null) return current
+        val detail = NovaApi.get(detailPath(current))
+        val episodes = detail.optJSONArray("episodes")?.objects()?.mapIndexed { index, item ->
+            Episode(
+                number = index + 1,
+                name = item.optString("title", "Episode ${index + 1}"),
+                minutes = 0,
+                synopsis = "",
+                still = 0,
+                remoteId = item.optString("id").takeIf { it.isNotBlank() },
+                imageUrl = current.imageUrl,
+            )
+        }.orEmpty()
+        if (episodes.isEmpty()) return current
+        val updated = current.copy(seasons = listOf(Season(1, episodes)))
+        val position = titles.indexOfFirst { it.id == id }
+        if (position >= 0) titles[position] = updated
+        return updated
+    }
+
+    fun detailPath(title: Title): String = when (title.remoteSource) {
+        "film" -> "/api/playback/${title.id}"
+        else -> "/api/anime/${title.id}"
+    }
+
+    private fun fromRemote(item: JSONObject, source: String, rank: Int?): Title {
+        val id = item.optString("id")
+        val name = item.optString("title", "Tanpa judul")
+        val isSeries = source != "film" || item.optBoolean("series")
+        val provider = item.optString("provider").ifBlank { if (source == "film") "NOVA Play" else "Sumber video" }
+        val rawGenres = item.words("genres")
+        val mappedGenres = rawGenres.mapNotNull(::genreFor).toSet().ifEmpty { setOf(Genre.Drama) }
+        val episodes = item.optJSONArray("episodes")?.objects()?.mapIndexed { index, ep ->
+            Episode(index + 1, ep.optString("title", "Episode ${index + 1}"), 0, "", 0,
+                remoteId = ep.optString("id").takeIf { it.isNotBlank() }, imageUrl = item.optString("image"))
+        }.orEmpty()
+        return Title(
+            id = id,
+            name = name,
+            kind = if (isSeries) Kind.Series else Kind.Movie,
+            year = item.optInt("year").takeIf { it in 1900..2100 } ?: LocalDate.now().year,
+            rating = "13+",
+            genres = mappedGenres,
+            moods = rawGenres + listOfNotNull(item.optString("kind").takeIf { it.isNotBlank() }, provider),
+            synopsis = item.optString("description").ifBlank { "Tonton ${item.optString("type").ifBlank { "video" }} dari katalog NOVA Play. Ketersediaan mengikuti sumber." },
+            cast = emptyList(),
+            creator = provider,
+            poster = 0,
+            backdrop = 0,
+            tint = Color(0xFF252B36),
+            style = TitleStyle.Condensed,
+            seasons = if (isSeries) listOf(Season(1, episodes)) else emptyList(),
+            top10 = rank?.takeIf { it < 10 }?.plus(1),
+            newEpisodes = rank != null && source == "anime",
+            imageUrl = item.optString("image").takeIf { it.startsWith("https://") },
+            remoteSource = source,
+        )
+    }
+
+    private fun genreFor(raw: String): Genre? = when {
+        raw.contains("action", true) || raw.contains("adventure", true) -> Genre.Action
+        raw.contains("horror", true) -> Genre.Horror
+        raw.contains("thriller", true) -> Genre.Thriller
+        raw.contains("romance", true) -> Genre.Romance
+        raw.contains("sci", true) || raw.contains("fantasy", true) -> Genre.SciFi
+        raw.contains("documentary", true) -> Genre.Documentary
+        raw.contains("mystery", true) -> Genre.Mystery
+        raw.contains("drama", true) -> Genre.Drama
+        raw.contains("crime", true) -> Genre.Crime
+        raw.contains("comedy", true) -> Genre.Comedy
+        else -> null
+    }
 }

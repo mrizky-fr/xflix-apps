@@ -141,7 +141,6 @@ fun HomeScreen(
     onOpenTitle: (Title, String?) -> Unit,
     onPlay: (Title) -> Unit,
     onSearch: () -> Unit,
-    onDownloads: () -> Unit,
 ) {
     val filter = vm.homeFilter
     val density = LocalDensity.current
@@ -265,7 +264,6 @@ fun HomeScreen(
             onFilter = applyFilter,
             onCategories = { categoriesOpen = true },
             onCast = { toaster.show(castMessage) },
-            onDownloads = onDownloads,
             onSearch = onSearch,
         )
 
@@ -360,6 +358,7 @@ private fun HeroCard(
     ) {
         XImage(
             id = title.poster,
+            url = title.imageUrl,
             displayWidth = 400.dp,
             eager = true,
             modifier = Modifier
@@ -452,7 +451,6 @@ private fun HomeTopBar(
     onFilter: (HomeFilter) -> Unit,
     onCategories: () -> Unit,
     onCast: () -> Unit,
-    onDownloads: () -> Unit,
     onSearch: () -> Unit,
 ) {
     val density = LocalDensity.current
@@ -482,7 +480,6 @@ private fun HomeTopBar(
                 maxLines = 1,
             )
             BarIcon(XIcons.Cast, stringResource(R.string.action_cast), onCast)
-            BarIcon(XIcons.Download, stringResource(R.string.nav_downloads), onDownloads)
             BarIcon(XIcons.Search, stringResource(R.string.action_search), onSearch)
         }
         Box(

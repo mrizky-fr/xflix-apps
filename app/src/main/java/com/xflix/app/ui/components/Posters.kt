@@ -81,7 +81,7 @@ fun PosterCard(
             .clip(RoundedCornerShape(Dimens.Radius))
             .clickable(interactionSource = interaction, indication = null, onClick = onClick),
     ) {
-        XImage(title.poster, Modifier.fillMaxSize(), displayWidth = width ?: 140.dp)
+        XImage(title.poster, Modifier.fillMaxSize(), displayWidth = width ?: 140.dp, url = title.imageUrl)
         Box(Modifier.matchParentSize().background(PosterShade))
         if (badges && title.original) XMark(13.dp, Modifier.padding(6.dp))
         if (badges && title.top10 != null) Top10Badge(Modifier.align(Alignment.TopEnd))
@@ -177,7 +177,7 @@ fun ContinueCard(progress: WatchProgress, title: Title, onPlay: () -> Unit, onIn
                 .aspectRatio(0.8f)
                 .clickable(interactionSource = interaction, indication = null, onClick = onPlay),
         ) {
-            XImage(title.poster, Modifier.fillMaxSize(), displayWidth = Dimens.PosterWidth)
+            XImage(title.poster, Modifier.fillMaxSize(), displayWidth = Dimens.PosterWidth, url = title.imageUrl)
             Box(Modifier.matchParentSize().background(PosterShade))
             Box(
                 Modifier

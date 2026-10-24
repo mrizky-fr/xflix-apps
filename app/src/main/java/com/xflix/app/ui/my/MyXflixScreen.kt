@@ -63,7 +63,6 @@ fun MyXflixScreen(
     bottomPadding: Dp,
     onSwitchProfile: () -> Unit,
     onOpenTitle: (Title, String?) -> Unit,
-    onDownloads: () -> Unit,
     onSearch: () -> Unit,
     onSignOut: () -> Unit,
 ) {
@@ -71,7 +70,6 @@ fun MyXflixScreen(
     val soonMessage = stringResource(R.string.toast_coming_soon)
     val context = LocalContext.current
     val version = remember(context) { context.packageManager.getPackageInfo(context.packageName, 0).versionName.orEmpty() }
-    val downloadedTitles = vm.downloads.keys.map { it.substringBefore('/') }.distinct().size
 
     LazyColumn(
         Modifier
@@ -127,15 +125,6 @@ fun MyXflixScreen(
         }
         items(Catalog.notices.size) { i ->
             NoticeRow(Catalog.notices[i]) { onOpenTitle(Catalog.title(Catalog.notices[i].titleId), null) }
-        }
-        item {
-            MenuRow(
-                icon = XIcons.Download,
-                iconBackground = XColors.Download,
-                label = stringResource(R.string.nav_downloads),
-                subtitle = stringResource(R.string.my_downloads_count, downloadedTitles),
-                onClick = onDownloads,
-            )
         }
         if (vm.liked.isNotEmpty()) {
             item {
@@ -245,6 +234,7 @@ private fun NoticeRow(notice: Notice, onClick: () -> Unit) {
                 .height(58.dp)
                 .clip(RoundedCornerShape(Dimens.Radius)),
             displayWidth = 104.dp,
+            url = title.imageUrl,
         )
         Spacer(Modifier.width(Space.m))
         Column(Modifier.weight(1f)) {

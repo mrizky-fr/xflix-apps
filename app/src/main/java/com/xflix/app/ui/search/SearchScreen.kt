@@ -82,7 +82,7 @@ fun SearchScreen(
     onPlay: (Title) -> Unit,
 ) {
     var query by rememberSaveable { mutableStateOf("") }
-    val results = remember(query) { Catalog.search(query) }
+    val results = remember(query, Catalog.titles.size) { Catalog.search(query) }
     val focus = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val bottomInset = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
@@ -198,7 +198,7 @@ private fun SearchField(
 
 @Composable
 private fun TopSearches(bottomInset: Dp, onOpenTitle: (Title, String?) -> Unit, onPlay: (Title) -> Unit) {
-    val titles = remember { Catalog.available.sortedBy { it.top10 ?: 50 }.take(12) }
+    val titles = remember(Catalog.titles.size) { Catalog.available.sortedBy { it.top10 ?: 50 }.take(12) }
     LazyColumn(contentPadding = PaddingValues(bottom = bottomInset + Space.l)) {
         item {
             Text(
@@ -222,6 +222,7 @@ private fun TopSearches(bottomInset: Dp, onOpenTitle: (Title, String?) -> Unit, 
                         .height(72.dp)
                         .clip(RoundedCornerShape(Dimens.Radius)),
                     displayWidth = 128.dp,
+                    url = title.imageUrl,
                 )
                 Spacer(Modifier.width(Space.m))
                 Text(title.name, style = XType.Label.copy(fontSize = 14.sp), modifier = Modifier.weight(1f), maxLines = 2)

@@ -26,6 +26,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.xflix.app.ui.theme.XColors
+import java.io.ByteArrayOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -38,6 +41,7 @@ private object Bitmaps {
     private val sourceWidths = ConcurrentHashMap<Int, Int>()
 
     fun key(id: Int, targetPx: Int) = "$id@$targetPx"
+    fun key(url: String, targetPx: Int) = "$url@$targetPx"
 
     fun cached(key: String): ImageBitmap? = cache.get(key)
 
@@ -56,6 +60,40 @@ private object Bitmaps {
         cache.put(key, bitmap)
         return bitmap
     }
+
+    fun loadUrl(url: String, targetPx: Int): ImageBitmap? {
+        val key = key(url, targetPx)
+        cache.get(key)?.let { return it }
+        if (!url.startsWith("https://")) return null
+        val connection = (URL(url).openConnection() as HttpURLConnection).apply {
+            connectTimeout = 8_000
+            readTimeout = 12_000
+        }
+        return try {
+            if (connection.responseCode !in 200..299 || !connection.contentType.orEmpty().startsWith("image/")) return null
+            val bytes = ByteArrayOutputStream()
+            connection.inputStream.use { input ->
+                val chunk = ByteArray(8192)
+                while (true) {
+                    val size = input.read(chunk)
+                    if (size < 0) break
+                    if (bytes.size() + size > 8_000_000) return null
+                    bytes.write(chunk, 0, size)
+                }
+            }
+            val data = bytes.toByteArray()
+            val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+            BitmapFactory.decodeByteArray(data, 0, data.size, bounds)
+            var sample = 1
+            while (bounds.outWidth / (sample * 2) >= targetPx) sample *= 2
+            val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size,
+                BitmapFactory.Options().apply { inSampleSize = sample })?.asImageBitmap() ?: return null
+            cache.put(key, bitmap)
+            bitmap
+        } finally {
+            connection.disconnect()
+        }
+    }
 }
 
 /** Decode async; eager untuk hero */
@@ -69,15 +107,18 @@ fun XImage(
     placeholder: Color = XColors.SurfaceHigh,
     eager: Boolean = false,
     contentDescription: String? = null,
+    url: String? = null,
 ) {
     val resources = LocalResources.current
     val targetPx = with(LocalDensity.current) { displayWidth.roundToPx() }
-    val key = Bitmaps.key(id, targetPx)
+    val key = if (url != null) Bitmaps.key(url, targetPx) else Bitmaps.key(id, targetPx)
     val initial = remember(key) {
-        Bitmaps.cached(key) ?: if (eager) Bitmaps.load(resources, id, targetPx) else null
+        Bitmaps.cached(key) ?: if (eager && url == null && id != 0) Bitmaps.load(resources, id, targetPx) else null
     }
     val bitmap by produceState(initial, key) {
-        if (value == null) value = withContext(Dispatchers.IO) { Bitmaps.load(resources, id, targetPx) }
+        if (value == null) value = withContext(Dispatchers.IO) {
+            runCatching { if (url != null) Bitmaps.loadUrl(url, targetPx) else if (id != 0) Bitmaps.load(resources, id, targetPx) else null }.getOrNull()
+        }
     }
     val alpha by animateFloatAsState(
         targetValue = if (bitmap != null) 1f else 0f,

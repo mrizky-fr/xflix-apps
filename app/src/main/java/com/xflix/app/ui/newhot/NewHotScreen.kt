@@ -114,7 +114,7 @@ fun NewHotScreen(
     onPlay: (Title) -> Unit,
     onSearch: () -> Unit,
 ) {
-    val entries = remember { buildEntries() }
+    val entries = remember(Catalog.titles.size) { buildEntries() }
     val headerIndex = remember(entries) {
         entries.withIndex().filter { it.value is Entry.Header }.associate { it.value.section to it.index }
     }
@@ -238,7 +238,7 @@ private fun NewHotItem(
                     .clip(RoundedCornerShape(Dimens.CardRadius))
                     .clickable(onClick = onOpen)
             ) {
-                XImage(title.backdrop, Modifier.fillMaxSize(), displayWidth = 340.dp)
+                XImage(title.backdrop, Modifier.fillMaxSize(), displayWidth = 340.dp, url = title.imageUrl)
                 if (title.original) XMark(14.dp, Modifier.padding(Space.s))
             }
             Spacer(Modifier.height(Space.m))

@@ -82,7 +82,6 @@ import com.xflix.app.ui.icons.XIcons
 import com.xflix.app.ui.intro.IntroScreen
 import com.xflix.app.ui.motion.LocalNavScope
 import com.xflix.app.ui.motion.LocalSharedScope
-import com.xflix.app.ui.my.DownloadsScreen
 import com.xflix.app.ui.my.MyXflixScreen
 import com.xflix.app.ui.newhot.NewHotScreen
 import com.xflix.app.ui.player.PlayerScreen
@@ -105,7 +104,6 @@ object Routes {
     const val NewHot = "newhot"
     const val My = "my"
     const val Search = "search"
-    const val Downloads = "downloads"
     const val Detail = "detail/{id}?key={key}"
     const val Player = "player/{id}?s={s}&e={e}"
 
@@ -218,13 +216,22 @@ fun XflixApp() {
                             ProfilesScreen(vm, onReady = { nav.resetTo(Routes.Home) })
                         }
                         screen(Routes.Home) {
-                            HomeScreen(
+                            if (Catalog.titles.isEmpty()) {
+                                Box(Modifier.fillMaxSize().background(Color.Black), contentAlignment = Alignment.Center) {
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        Text(if (vm.homeReady) vm.catalogError ?: "Katalog belum tersedia." else "Memuat katalog NOVA Play…", color = Color.White)
+                                        if (vm.homeReady) {
+                                            Spacer(Modifier.height(16.dp))
+                                            Text("Coba lagi", color = Color.White, modifier = Modifier.clickable { vm.refreshCatalog() })
+                                        }
+                                    }
+                                }
+                            } else HomeScreen(
                                 vm = vm,
                                 bottomPadding = bottomPadding,
                                 onOpenTitle = openTitle,
                                 onPlay = play,
                                 onSearch = { nav.navigate(Routes.Search) },
-                                onDownloads = { nav.navigate(Routes.Downloads) },
                             )
                         }
                         screen(Routes.NewHot) {
@@ -242,7 +249,6 @@ fun XflixApp() {
                                 bottomPadding = bottomPadding,
                                 onSwitchProfile = { nav.navigate(Routes.Profiles) },
                                 onOpenTitle = openTitle,
-                                onDownloads = { nav.navigate(Routes.Downloads) },
                                 onSearch = { nav.navigate(Routes.Search) },
                                 onSignOut = {
                                     vm.signOut()
@@ -255,15 +261,6 @@ fun XflixApp() {
                                 onBack = { nav.popBackStack() },
                                 onOpenTitle = openTitle,
                                 onPlay = play,
-                            )
-                        }
-                        screen(Routes.Downloads, push = true) {
-                            DownloadsScreen(
-                                vm = vm,
-                                onBack = { nav.popBackStack() },
-                                onOpenTitle = { openTitle(it, null) },
-                                onPlay = play,
-                                onFindMore = { nav.popBackStack(Routes.Home, inclusive = false) },
                             )
                         }
                         screen(
@@ -310,7 +307,7 @@ fun XflixApp() {
                     }
 
                     AnimatedVisibility(
-                        visible = tab != null && !vm.overlayOpen,
+                        visible = tab != null && Catalog.titles.isNotEmpty() && !vm.overlayOpen,
                         modifier = Modifier.align(Alignment.BottomCenter),
                         enter = slideInVertically(tween(Motion.Long, easing = Motion.EmphasizedDecelerate)) { it } + fadeIn(),
                         exit = slideOutVertically(tween(Motion.Medium)) { it } + fadeOut(),

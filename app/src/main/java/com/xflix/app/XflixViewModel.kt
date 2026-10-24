@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.xflix.app.data.Genre
 import com.xflix.app.data.Kind
 import com.xflix.app.data.Profile
+import com.xflix.app.data.Catalog
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -26,6 +27,8 @@ class XflixViewModel : ViewModel() {
     var profile by mutableStateOf<Profile?>(null)
         private set
     var homeReady by mutableStateOf(false)
+        private set
+    var catalogError by mutableStateOf<String?>(null)
         private set
     var homeFilter by mutableStateOf(HomeFilter())
     var smartDownloads by mutableStateOf(true)
@@ -49,9 +52,15 @@ class XflixViewModel : ViewModel() {
         profile = next
         homeReady = false
         homeFilter = HomeFilter()
-        // Simulasi muat katalog
+        refreshCatalog()
+    }
+
+    fun refreshCatalog() {
+        homeReady = false
+        catalogError = null
         viewModelScope.launch {
-            delay(700)
+            runCatching { Catalog.refresh() }
+                .onFailure { catalogError = it.message ?: "Gagal memuat katalog NOVA Play." }
             homeReady = true
         }
     }

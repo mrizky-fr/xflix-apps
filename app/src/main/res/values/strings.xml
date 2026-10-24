@@ -192,8 +192,8 @@
     <string name="player_youtube_failed_body">Video ini tidak bisa diputar di dalam aplikasi.</string>
     <string name="player_open_youtube">Buka di YouTube</string>
     <string name="player_connection_lost">Koneksi terputus, menunggu internet…</string>
-    <string name="detail_streaming">Streaming dari YouTube · butuh internet</string>
-    <string name="detail_streaming_offline">Sedang offline · serial ini butuh internet</string>
+    <string name="detail_streaming">Streaming dari NOVA Play · butuh internet</string>
+    <string name="detail_streaming_offline">Sedang offline · video ini butuh internet</string>
 
     <!-- Fitur yang belum tersambung -->
     <string name="toast_cast">Transmisi belum tersedia di versi demo</string>

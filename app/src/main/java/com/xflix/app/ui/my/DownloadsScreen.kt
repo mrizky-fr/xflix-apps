@@ -208,7 +208,7 @@ private fun DownloadRow(
                 .clip(RoundedCornerShape(Dimens.Radius)),
             contentAlignment = Alignment.Center,
         ) {
-            XImage(title.backdrop, Modifier.fillMaxSize(), displayWidth = 124.dp)
+            XImage(title.backdrop, Modifier.fillMaxSize(), displayWidth = 124.dp, url = title.imageUrl)
             if (done) {
                 Box(
                     Modifier

@@ -193,7 +193,8 @@ private fun PosterWall() {
     )
     // Poster plus gambar episode
     val posters = remember {
-        Catalog.titles.flatMap { t -> listOf(t.poster) + t.seasons.flatMap { s -> s.episodes.map { it.still } } }
+        listOf(R.drawable.poster_sekolah_normal, R.drawable.poster_sains_rumah_editor,
+            R.drawable.poster_buruk_sangka, R.drawable.poster_pwk_podcast)
     }
     Box(
         Modifier
@@ -278,7 +279,6 @@ private fun DownloadIllustration() {
         animationSpec = infiniteRepeatable(tween(2400, easing = FastOutSlowInEasing), RepeatMode.Reverse),
         label = "float",
     )
-    val title = remember { Catalog.title("sekolah_normal") }
     val progress = ((t - 0.08f) / 0.54f).coerceIn(0f, 1f)
     val check = ((t - 0.66f) / 0.1f).coerceIn(0f, 1f)
     Box(
@@ -302,7 +302,7 @@ private fun DownloadIllustration() {
                     .fillMaxSize()
                     .clip(RoundedCornerShape(18.dp))
             ) {
-                XImage(title.poster, Modifier.fillMaxSize(), displayWidth = 156.dp)
+                XImage(R.drawable.poster_sekolah_normal, Modifier.fillMaxSize(), displayWidth = 156.dp)
                 Box(
                     Modifier
                         .fillMaxSize()
@@ -315,7 +315,7 @@ private fun DownloadIllustration() {
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Column(Modifier.weight(1f)) {
-                        Text(title.name, style = XType.Label)
+                        Text("Sekolah Normal", style = XType.Label)
                         Text(stringResource(R.string.onb_download_meta), style = XType.Caption)
                     }
                     DownloadRing(progress = progress, done = check, modifier = Modifier.size(30.dp))
