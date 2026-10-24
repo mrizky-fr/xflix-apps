@@ -4,7 +4,7 @@
 
 <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=18&duration=3000&pause=1000&color=E50914&center=true&vCenter=true&width=640&lines=Nonton+gratis%2C+tanpa+langganan;Ringan%2C+cepat%2C+dan+bersih;Pasang%2C+pilih%2C+langsung+tonton" alt="Nonton gratis, tanpa langganan" />
 
-<a href="https://github.com/mrizky-fr/xflix-apps/raw/main/release/Xflix-Novaplay.apk"><img src="https://img.shields.io/badge/Download%20%26%20Install%20Now-APK%201.0.7-E50914?style=for-the-badge" alt="Download & Install Now" height="42" /></a>
+<a href="https://github.com/mrizky-fr/xflix-apps/raw/main/release/Xflix-Novaplay.apk"><img src="https://img.shields.io/badge/Download%20%26%20Install%20Now-APK%201.0.8-E50914?style=for-the-badge" alt="Download & Install Now" height="42" /></a>
 
 <sub>Android 8.0+ · ±4,6 MB · Gratis</sub>
 
@@ -12,7 +12,7 @@
 
 ## Xflix - Novaplay
 
-Mempersembahkan **Xflix**, aplikasi streaming video **gratis** untuk Android. Tidak perlu langganan, tidak perlu kartu kredit. Cukup pasang, pilih profil, dan tontonan favoritmu langsung tersaji.
+Mempersembahkan **Xflix**, aplikasi streaming video **gratis** untuk Android. Tidak perlu langganan, tidak perlu kartu kredit. Cukup pasang, pilih platform, dan tontonan favoritmu langsung tersaji.
 
 Setiap judul hadir dalam tampilan sinematis yang bersih: poster besar, deretan Top 10 hari ini, dan pemutar layar penuh yang hanya menampilkan apa yang ingin kamu lihat.
 
@@ -50,8 +50,8 @@ Setiap judul hadir dalam tampilan sinematis yang bersih: poster besar, deretan T
       Tonton sambil rebahan tanpa takut tersentuh tidak sengaja.
     </td>
     <td width="50%" valign="top">
-      <h3>Profil keluarga</h3>
-      Setiap anggota keluarga punya profilnya sendiri, termasuk profil khusus anak-anak.
+      <h3>Dua platform</h3>
+      Pilih Novaplay atau Xflix-YT di awal, lalu pindah kapan saja dari menu Xflix Saya.
     </td>
   </tr>
 </table>
@@ -60,7 +60,7 @@ Setiap judul hadir dalam tampilan sinematis yang bersih: poster besar, deretan T
 
 <div align="center">
 
-<a href="https://github.com/mrizky-fr/xflix-apps/raw/main/release/Xflix-Novaplay.apk"><img src="https://img.shields.io/badge/Download%20%26%20Install%20Now-APK%201.0.7-E50914?style=for-the-badge" alt="Download & Install Now" height="42" /></a>
+<a href="https://github.com/mrizky-fr/xflix-apps/raw/main/release/Xflix-Novaplay.apk"><img src="https://img.shields.io/badge/Download%20%26%20Install%20Now-APK%201.0.8-E50914?style=for-the-badge" alt="Download & Install Now" height="42" /></a>
 
 </div>
 
