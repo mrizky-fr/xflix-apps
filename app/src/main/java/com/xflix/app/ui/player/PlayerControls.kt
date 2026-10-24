@@ -470,7 +470,10 @@ internal fun EpisodePanel(
     val list = rememberLazyListState(initialFirstVisibleItemIndex = (current - 1).coerceIn(0, (episodes.size - 1).coerceAtLeast(0)))
     PlayerSheet(stringResource(R.string.tab_episodes), onClose) {
         if (seasons.size > 1) {
+            // Mulai dari musim aktif
+            val seasonList = rememberLazyListState(initialFirstVisibleItemIndex = (seasons.indexOfFirst { it.number == selectedSeason }).coerceAtLeast(0))
             LazyRow(
+                state = seasonList,
                 contentPadding = PaddingValues(horizontal = Space.xl),
                 horizontalArrangement = Arrangement.spacedBy(Space.s),
             ) {
