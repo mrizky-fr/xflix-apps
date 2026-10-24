@@ -15,4 +15,4 @@ $env:JAVA_HOME = 'C:\Program Files\Android\Android Studio\jbr'
 .\gradlew.bat :app:assembleRelease
 ```
 
-Gradle membuat APK rilis di `app/build/outputs/apk/release/`. APK yang siap dibagikan ditempatkan di `../dist/Xflix-1.0.0.apk`.
+Gradle membuat APK rilis di `app/build/outputs/apk/release/`. APK yang siap dibagikan ditempatkan di `../dist/Xflix-1.0.1.apk`.
