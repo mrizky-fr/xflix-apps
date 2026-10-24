@@ -87,6 +87,8 @@
     <string name="home_for">Untuk %1$s</string>
     <string name="chip_series">Serial</string>
     <string name="chip_movies">Film</string>
+    <string name="chip_anime">Anime</string>
+    <string name="chip_donghua">Donghua</string>
     <string name="chip_categories">Kategori</string>
     <string name="category_home">Beranda</string>
     <string name="row_continue">Lanjutkan Menonton untuk %1$s</string>
@@ -94,8 +96,12 @@
     <string name="row_top10">Top 10 di Indonesia Hari Ini</string>
     <string name="row_top10_series">Top 10 Serial di Indonesia Hari Ini</string>
     <string name="row_top10_movies">Top 10 Film di Indonesia Hari Ini</string>
+    <string name="row_top10_anime">Top 10 Anime di Indonesia Hari Ini</string>
+    <string name="row_top10_donghua">Top 10 Donghua di Indonesia Hari Ini</string>
     <string name="row_originals">Hanya di Xflix</string>
     <string name="row_new">Baru di Xflix</string>
+    <string name="row_anime">Anime</string>
+    <string name="row_donghua">Donghua</string>
     <string name="row_horror">Horor yang Bikin Susah Tidur</string>
     <string name="row_thriller">Thriller Penuh Teka-teki</string>
     <string name="row_romance">Kisah Cinta &amp; Drama</string>

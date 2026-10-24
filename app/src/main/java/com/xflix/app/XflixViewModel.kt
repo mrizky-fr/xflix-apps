@@ -11,12 +11,22 @@ import com.xflix.app.data.Genre
 import com.xflix.app.data.Kind
 import com.xflix.app.data.Profile
 import com.xflix.app.data.Catalog
+import com.xflix.app.data.ContentCategory
+import com.xflix.app.data.Title
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-data class HomeFilter(val kind: Kind? = null, val genre: Genre? = null) {
-    val isActive: Boolean get() = kind != null || genre != null
+data class HomeFilter(
+    val kind: Kind? = null,
+    val genre: Genre? = null,
+    val category: ContentCategory? = null,
+) {
+    val isActive: Boolean get() = kind != null || genre != null || category != null
+    fun matches(title: Title): Boolean =
+        (kind == null || title.kind == kind) &&
+            (genre == null || genre in title.genres) &&
+            (category == null || title.category == category)
 }
 
 /** State lintas layar, data lokal */

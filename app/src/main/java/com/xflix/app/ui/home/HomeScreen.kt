@@ -75,6 +75,7 @@ import com.xflix.app.HomeFilter
 import com.xflix.app.R
 import com.xflix.app.XflixViewModel
 import com.xflix.app.data.Catalog
+import com.xflix.app.data.ContentCategory
 import com.xflix.app.data.Genre
 import com.xflix.app.data.Kind
 import com.xflix.app.data.Title
@@ -111,13 +112,15 @@ private val TitleBarHeight = 48.dp
 private val ChipsHeight = 44.dp
 
 private fun buildRows(filter: HomeFilter, myList: List<String>): List<HomeRow> {
-    val match = { t: Title -> (filter.kind == null || t.kind == filter.kind) && (filter.genre == null || filter.genre in t.genres) }
+    val match = filter::matches
     val pool = Catalog.available.filter(match)
     fun genres(vararg g: Genre) = pool.filter { t -> g.any { it in t.genres } }
-    val top10Label = when (filter.kind) {
-        Kind.Series -> R.string.row_top10_series
-        Kind.Movie -> R.string.row_top10_movies
-        null -> R.string.row_top10
+    val top10Label = when {
+        filter.category == ContentCategory.Anime -> R.string.row_top10_anime
+        filter.category == ContentCategory.Donghua -> R.string.row_top10_donghua
+        filter.kind == Kind.Series -> R.string.row_top10_series
+        filter.kind == Kind.Movie -> R.string.row_top10_movies
+        else -> R.string.row_top10
     }
     return listOf(
         HomeRow("continue", R.string.row_continue, RowType.Continue, Catalog.continueWatching.map { Catalog.title(it.titleId) }.filter(match)),
@@ -125,6 +128,8 @@ private fun buildRows(filter: HomeFilter, myList: List<String>): List<HomeRow> {
         HomeRow("top10", top10Label, RowType.Top10, Catalog.top10.filter(match)),
         HomeRow("originals", R.string.row_originals, RowType.Tall, pool.filter { it.original }),
         HomeRow("new", R.string.row_new, RowType.Poster, pool.sortedByDescending { it.year }.take(10)),
+        HomeRow("anime", R.string.row_anime, RowType.Poster, pool.filter { it.category == ContentCategory.Anime }),
+        HomeRow("donghua", R.string.row_donghua, RowType.Poster, pool.filter { it.category == ContentCategory.Donghua }),
         HomeRow("comedy", R.string.row_comedy, RowType.Poster, genres(Genre.Comedy)),
         HomeRow("horror", R.string.row_horror, RowType.Poster, genres(Genre.Horror)),
         HomeRow("thriller", R.string.row_thriller, RowType.Poster, genres(Genre.Thriller, Genre.Mystery)),
@@ -152,7 +157,7 @@ fun HomeScreen(
     val rows = remember(filter, vm.myList.toList()) { buildRows(filter, vm.myList) }
     val hero = remember(filter) {
         Catalog.available
-            .filter { (filter.kind == null || it.kind == filter.kind) && (filter.genre == null || filter.genre in it.genres) }
+            .filter(filter::matches)
             .minByOrNull { it.top10 ?: 99 } ?: Catalog.available.first()
     }
 
@@ -268,14 +273,21 @@ fun HomeScreen(
         )
 
         // Hanya genre yang ada isinya
-        val genres = remember { Genre.entries.filter { g -> Catalog.available.any { g in it.genres } } }
+        val categories = ContentCategory.entries.filter { category -> Catalog.available.any { it.category == category } }
+        val categoryLabels = categories.map { stringResource(if (it == ContentCategory.Anime) R.string.chip_anime else R.string.chip_donghua) }
+        val genres = Genre.entries.filter { g -> Catalog.available.any { g in it.genres } }
         val genreLabels = genres.map { stringResource(it.label) }
         PickerOverlay(
             visible = categoriesOpen,
-            options = listOf(stringResource(R.string.category_home)) + genreLabels,
-            selected = filter.genre?.let { genres.indexOf(it) + 1 } ?: 0,
+            options = listOf(stringResource(R.string.category_home)) + categoryLabels + genreLabels,
+            selected = filter.genre?.let { categories.size + genres.indexOf(it) + 1 }
+                ?: filter.category?.let { categories.indexOf(it) + 1 } ?: 0,
             onPick = { index ->
-                applyFilter(filter.copy(genre = if (index == 0) null else genres[index - 1]))
+                applyFilter(when {
+                    index == 0 -> HomeFilter()
+                    index <= categories.size -> filter.copy(kind = null, genre = null, category = categories[index - 1])
+                    else -> filter.copy(genre = genres[index - categories.size - 1])
+                })
                 categoriesOpen = false
             },
             onDismiss = { categoriesOpen = false },
@@ -523,14 +535,27 @@ private fun FilterChips(filter: HomeFilter, onFilter: (HomeFilter) -> Unit, onCa
         }
         listOf(Kind.Series, Kind.Movie).filter { k -> Catalog.available.any { it.kind == k } }.forEach { kind ->
             AnimatedVisibility(
-                visible = filter.kind == null || filter.kind == kind,
+                visible = filter.category == null && (filter.kind == null || filter.kind == kind),
                 enter = expandHorizontally(tween(Motion.Medium)) + fadeIn(),
                 exit = shrinkHorizontally(tween(Motion.Medium)) + fadeOut(),
             ) {
                 Chip(
                     label = stringResource(if (kind == Kind.Series) R.string.chip_series else R.string.chip_movies),
                     selected = filter.kind == kind,
-                    onClick = { onFilter(filter.copy(kind = if (filter.kind == kind) null else kind)) },
+                    onClick = { onFilter(filter.copy(kind = if (filter.kind == kind) null else kind, category = null)) },
+                )
+            }
+        }
+        ContentCategory.entries.filter { category -> Catalog.available.any { it.category == category } }.forEach { category ->
+            AnimatedVisibility(
+                visible = filter.kind == null && (filter.category == null || filter.category == category),
+                enter = expandHorizontally(tween(Motion.Medium)) + fadeIn(),
+                exit = shrinkHorizontally(tween(Motion.Medium)) + fadeOut(),
+            ) {
+                Chip(
+                    label = stringResource(if (category == ContentCategory.Anime) R.string.chip_anime else R.string.chip_donghua),
+                    selected = filter.category == category,
+                    onClick = { onFilter(filter.copy(kind = null, category = if (filter.category == category) null else category)) },
                 )
             }
         }

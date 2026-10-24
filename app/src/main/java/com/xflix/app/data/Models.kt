@@ -9,6 +9,8 @@ import java.time.LocalDate
 
 enum class Kind { Movie, Series }
 
+enum class ContentCategory { Anime, Donghua }
+
 // Gaya tipografi judul di poster
 enum class TitleStyle { Condensed, Serif, SerifItalic, Wide }
 
@@ -63,6 +65,7 @@ data class Title(
     val premiere: LocalDate? = null,
     val imageUrl: String? = null,
     val remoteSource: String? = null,
+    val category: ContentCategory? = null,
 ) {
     val isUpcoming: Boolean get() = premiere != null
     val streaming: Boolean get() = remoteSource != null

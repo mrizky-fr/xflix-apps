@@ -139,6 +139,11 @@ object Catalog {
             newEpisodes = rank != null && source == "anime",
             imageUrl = item.optString("image").takeIf { it.startsWith("https://") },
             remoteSource = source,
+            category = when (item.optString("kind").lowercase()) {
+                "anime" -> ContentCategory.Anime
+                "donghua" -> ContentCategory.Donghua
+                else -> null
+            },
         )
     }
 
