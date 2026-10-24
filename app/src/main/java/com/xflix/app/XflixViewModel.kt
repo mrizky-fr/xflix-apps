@@ -71,7 +71,7 @@ class XflixViewModel : ViewModel() {
         catalogError = null
         viewModelScope.launch {
             runCatching { Catalog.refresh() }
-                .onFailure { catalogError = it.message ?: "Gagal memuat katalog NOVA Play." }
+                .onFailure { catalogError = it.message ?: "Gagal memuat katalog." }
             homeReady = true
         }
     }

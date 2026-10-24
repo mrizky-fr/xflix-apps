@@ -198,6 +198,8 @@
     <string name="player_direct_hint">Ketuk video untuk memutar dari sumbernya</string>
     <string name="detail_streaming">Streaming dari NOVA Play · butuh internet</string>
     <string name="detail_streaming_youtube">Streaming dari YouTube · butuh internet</string>
+    <string name="detail_streaming_pinedrama">Streaming dari PineDrama · butuh internet</string>
+    <string name="detail_streaming_melolo">Streaming dari Melolo · butuh internet</string>
     <string name="detail_streaming_offline">Sedang offline · video ini butuh internet</string>
 
     <!-- Fitur yang belum tersambung -->

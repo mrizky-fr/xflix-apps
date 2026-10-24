@@ -73,14 +73,28 @@ data class Title(
 ) {
     val isUpcoming: Boolean get() = premiere != null
     val streaming: Boolean get() = remoteSource != null
-    val platform: Platform get() = if (remoteSource == "youtube") Platform.XflixYT else Platform.Novaplay
+    val platform: Platform get() = when (remoteSource) {
+        "youtube" -> Platform.XflixYT
+        "pinedrama" -> Platform.PineDrama
+        "melolo" -> Platform.Melolo
+        else -> Platform.Novaplay
+    }
+
+    // Drama pendek diputar tegak
+    val vertical: Boolean get() = platform == Platform.PineDrama || platform == Platform.Melolo
 }
 
 // Sumber katalog yang dipilih
-enum class Platform { Novaplay, XflixYT }
+enum class Platform { Novaplay, XflixYT, PineDrama, Melolo }
 
 @Immutable
-data class Profile(val id: String, val name: String, val color: Color, val platform: Platform)
+data class Profile(
+    val id: String,
+    val name: String,
+    val color: Color,
+    val platform: Platform,
+    @param:DrawableRes val logo: Int = 0,
+)
 
 @Immutable
 data class WatchProgress(

@@ -117,15 +117,19 @@ fun ProfilesScreen(vm: XflixViewModel, onReady: () -> Unit) {
                 textAlign = TextAlign.Center,
             )
             Spacer(Modifier.height(Space.xl))
-            Row(horizontalArrangement = Arrangement.spacedBy(Space.xl)) {
-                Catalog.profiles.forEachIndexed { index, profile ->
-                    ProfileTile(
-                        profile = profile,
-                        index = index,
-                        hidden = chosen?.id == profile.id,
-                        onPlaced = { tiles[profile.id] = it },
-                        onClick = { if (chosen == null) chosen = profile },
-                    )
+            Column(verticalArrangement = Arrangement.spacedBy(Space.l)) {
+                Catalog.profiles.chunked(2).forEachIndexed { row, pair ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(Space.xl)) {
+                        pair.forEachIndexed { col, profile ->
+                            ProfileTile(
+                                profile = profile,
+                                index = row * 2 + col,
+                                hidden = chosen?.id == profile.id,
+                                onPlaced = { tiles[profile.id] = it },
+                                onClick = { if (chosen == null) chosen = profile },
+                            )
+                        }
+                    }
                 }
             }
         }

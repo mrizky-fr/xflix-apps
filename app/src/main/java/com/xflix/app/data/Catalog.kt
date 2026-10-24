@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import com.xflix.app.R
 import java.net.HttpURLConnection
 import java.net.URL
 import java.time.LocalDate
@@ -49,6 +50,8 @@ object Catalog {
     val profiles = listOf(
         Profile("novaplay", "Novaplay", Color(0xFF7C3AED), Platform.Novaplay),
         Profile("xflix-yt", "Xflix-YT", Color.Black, Platform.XflixYT),
+        Profile("pinedrama", "PineDrama", Color.Black, Platform.PineDrama, R.drawable.platform_pinedrama),
+        Profile("melolo", "Melolo", Color.Black, Platform.Melolo, R.drawable.platform_melolo),
     )
     var platform by mutableStateOf(Platform.Novaplay)
     val continueWatching = emptyList<WatchProgress>()
@@ -74,6 +77,28 @@ object Catalog {
         private set
 
     suspend fun refresh() {
+        val batch = when (platform) {
+            Platform.Novaplay, Platform.XflixYT -> loadNova()
+            Platform.PineDrama -> ShortDrama.pineDrama().let { Batch(it, it) }
+            Platform.Melolo -> ShortDrama.melolo().let { Batch(it, it) }
+        }
+        if (batch.titles.isEmpty()) error("Katalog masih kosong.")
+        seed = Random.nextInt()
+        // Top 10 acak per platform
+        val random = Random(seed)
+        val rank = batch.featured.groupBy { it.platform }.values.flatMap { group ->
+            group.map { it.id }.distinct().shuffled(random).take(10).mapIndexed { i, id -> id to i + 1 }
+        }.toMap()
+        // Platform lain tetap tersimpan
+        val loaded = batch.titles.map { it.platform }.toSet()
+        val kept = titles.filter { it.platform !in loaded }
+        titles.clear()
+        titles.addAll(kept + batch.titles.map { title -> title.copy(top10 = rank[title.id]) })
+    }
+
+    private class Batch(val titles: List<Title>, val featured: List<Title>)
+
+    private suspend fun loadNova(): Batch {
         val data = NovaApi.get("/api/catalog")
         val youtube = withContext(Dispatchers.IO) { YouTubeCatalog.titles }
         val popular = buildList {
@@ -85,20 +110,12 @@ object Catalog {
             data.optJSONArray("animeLibrary")?.objects()?.forEach { add(fromRemote(it, "anime", null)) }
             data.optJSONArray("donghuaLibrary")?.objects()?.forEach { add(fromRemote(it, "anime", null)) }
         }
-        val all = (popular + library + youtube).distinctBy { it.id }
-        if (all.isEmpty()) error("Katalog NOVA Play masih kosong.")
-        seed = Random.nextInt()
-        // Top 10 acak per platform
-        val random = Random(seed)
-        val rank = listOf(popular, youtube).flatMap { group ->
-            group.map { it.id }.distinct().shuffled(random).take(10).mapIndexed { i, id -> id to i + 1 }
-        }.toMap()
-        titles.clear()
-        titles.addAll(all.map { title -> title.copy(top10 = rank[title.id]) })
+        return Batch((popular + library + youtube).distinctBy { it.id }, popular + youtube)
     }
 
     suspend fun ensureDetails(id: String): Title {
         val current = title(id)
+        if (current.vertical) return replace(ShortDrama.details(current))
         if (current.kind == Kind.Movie || current.seasons.firstOrNull()?.episodes?.firstOrNull()?.remoteId != null) return current
         val detail = NovaApi.get(detailPath(current))
         val episodes = detail.optJSONArray("episodes")?.objects()?.mapIndexed { index, item ->
@@ -113,8 +130,11 @@ object Catalog {
             )
         }.orEmpty()
         if (episodes.isEmpty()) return current
-        val updated = current.copy(seasons = listOf(Season(1, episodes)))
-        val position = titles.indexOfFirst { it.id == id }
+        return replace(current.copy(seasons = listOf(Season(1, episodes))))
+    }
+
+    private fun replace(updated: Title): Title {
+        val position = titles.indexOfFirst { it.id == updated.id }
         if (position >= 0) titles[position] = updated
         return updated
     }

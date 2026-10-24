@@ -76,6 +76,7 @@ import com.xflix.app.XflixViewModel
 import com.xflix.app.data.Catalog
 import com.xflix.app.data.Episode
 import com.xflix.app.data.Kind
+import com.xflix.app.data.Platform
 import com.xflix.app.data.Title
 import com.xflix.app.ui.components.ArtSize
 import com.xflix.app.ui.components.DownloadRing
@@ -267,6 +268,8 @@ private fun DetailHero(title: Title, sharedKey: String?, muted: Boolean, onToggl
             displayWidth = 420.dp,
             eager = true,
             placeholder = Color.Black,
+            // Cover tegak: wajah di atas
+            alignment = if (title.vertical) Alignment.TopCenter else Alignment.Center,
             modifier = Modifier
                 .fillMaxSize()
                 .graphicsLayer {
@@ -347,8 +350,12 @@ private fun DetailInfo(title: Title, vm: XflixViewModel, onPlay: () -> Unit, onS
             Text(
                 stringResource(when {
                     !online -> R.string.detail_streaming_offline
-                    title.remoteSource == "youtube" -> R.string.detail_streaming_youtube
-                    else -> R.string.detail_streaming
+                    else -> when (title.platform) {
+                        Platform.Novaplay -> R.string.detail_streaming
+                        Platform.XflixYT -> R.string.detail_streaming_youtube
+                        Platform.PineDrama -> R.string.detail_streaming_pinedrama
+                        Platform.Melolo -> R.string.detail_streaming_melolo
+                    }
                 }),
                 style = XType.Caption.copy(fontSize = 12.5.sp, color = if (online) XColors.TextSecondary else XColors.Warning),
             )

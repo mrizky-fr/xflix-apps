@@ -216,10 +216,10 @@ fun XflixApp() {
                             ProfilesScreen(vm, onReady = { nav.resetTo(Routes.Home) })
                         }
                         screen(Routes.Home) {
-                            if (Catalog.titles.isEmpty()) {
+                            if (Catalog.available.isEmpty()) {
                                 Box(Modifier.fillMaxSize().background(Color.Black), contentAlignment = Alignment.Center) {
                                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        Text(if (vm.homeReady) vm.catalogError ?: "Katalog belum tersedia." else "Memuat katalog NOVA Play…", color = Color.White)
+                                        Text(if (vm.homeReady) vm.catalogError ?: "Katalog belum tersedia." else "Memuat katalog…", color = Color.White)
                                         if (vm.homeReady) {
                                             Spacer(Modifier.height(16.dp))
                                             Text("Coba lagi", color = Color.White, modifier = Modifier.clickable { vm.refreshCatalog() })
@@ -307,7 +307,7 @@ fun XflixApp() {
                     }
 
                     AnimatedVisibility(
-                        visible = tab != null && Catalog.titles.isNotEmpty() && !vm.overlayOpen,
+                        visible = tab != null && Catalog.available.isNotEmpty() && !vm.overlayOpen,
                         modifier = Modifier.align(Alignment.BottomCenter),
                         enter = slideInVertically(tween(Motion.Long, easing = Motion.EmphasizedDecelerate)) { it } + fadeIn(),
                         exit = slideOutVertically(tween(Motion.Medium)) { it } + fadeOut(),
