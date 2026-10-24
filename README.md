@@ -1,59 +1,86 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:FF7A45,100:E50914&height=200&section=header&text=Xflix&fontColor=ffffff&fontSize=56&fontAlignY=36&desc=Streaming%20Film%2C%20Serial%20dan%20Anime%20%C2%B7%20NOVA%20Play&descSize=18&descAlignY=58" alt="Xflix — Streaming Film, Serial dan Anime · NOVA Play" width="100%" />
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:FF7A45,100:E50914&height=200&section=header&text=Xflix&fontColor=ffffff&fontSize=56&fontAlignY=36&desc=Streaming%20Video%20Gratis%20%C2%B7%20Film%2C%20Serial%20dan%20Anime&descSize=18&descAlignY=58" alt="Xflix — Streaming Video Gratis · Film, Serial dan Anime" width="100%" />
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=18&duration=3000&pause=1000&color=E50914&center=true&vCenter=true&width=640&lines=Film+%C2%B7+Serial+%C2%B7+Anime+%C2%B7+Donghua+%C2%B7+Dracin;Pemutar+lengkap%3A+kunci%2C+kecepatan%2C+episode%2C+server;Kotlin+%C2%B7+Jetpack+Compose+%C2%B7+Media3+%C2%B7+WebView" alt="Film · Serial · Anime · Donghua · Dracin" />
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=18&duration=3000&pause=1000&color=E50914&center=true&vCenter=true&width=640&lines=Nonton+gratis%2C+tanpa+langganan;Film+%C2%B7+Serial+%C2%B7+Anime+%C2%B7+Donghua+%C2%B7+Dracin;Ratusan+judul+dalam+satu+aplikasi" alt="Nonton gratis, tanpa langganan" />
 
-[![Versi](https://img.shields.io/badge/versi-1.0.3-E50914?style=flat-square)](#build)
-[![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=flat-square&logo=android&logoColor=white)](#build)
-[![Kotlin](https://img.shields.io/badge/Kotlin-Jetpack%20Compose-7F52FF?style=flat-square&logo=kotlin&logoColor=white)](https://developer.android.com/compose)
-[![NOVA Play](https://img.shields.io/badge/API-NOVA%20Play-141414?style=flat-square&logo=github)](https://github.com/Lukman0521/nova-play)
-[![Last commit](https://img.shields.io/github/last-commit/mrizky-fr/xflix-apps?style=flat-square&color=141414&label=update)](https://github.com/mrizky-fr/xflix-apps/commits/main)
+<a href="https://github.com/mrizky-fr/xflix-apps/raw/main/release/Xflix-Novaplay.apk"><img src="https://img.shields.io/badge/Download%20%26%20Install%20Now-APK%201.0.3-E50914?style=for-the-badge&logo=android&logoColor=white" alt="Download & Install Now" height="42" /></a>
+
+<sub>Android 8.0+ · ±3,7 MB · Gratis</sub>
 
 </div>
 
-## Tentang
+## Xflix - Novaplay
 
-**Xflix - Novaplay** adalah aplikasi streaming Android dengan tampilan sinematis yang bersih. Katalog dan pemutarnya diambil langsung dari API publik [NOVA Play](https://github.com/Lukman0521/nova-play), jadi APK tetap ringan (±3,7 MB) karena tidak membundel satu pun file video.
+Mempersembahkan **Xflix**, rumah baru untuk menonton film, serial, anime, donghua, dan drama China secara **gratis**. Tidak perlu langganan, tidak perlu kartu kredit. Cukup pasang, pilih profil, dan tontonan favoritmu langsung tersaji.
 
-Fokusnya ada di pengalaman menonton. Apa pun sumber videonya, entah embed pihak ketiga atau MP4/HLS langsung, penonton selalu memakai kontrol yang sama dan rapi milik Xflix, bukan kontrol bawaan masing-masing situs.
+Setiap judul hadir dalam tampilan sinematis yang bersih: poster besar, deretan Top 10 hari ini, dan pemutar layar penuh yang hanya menampilkan apa yang ingin kamu lihat, yaitu filmnya.
 
-- 🎬 Katalog film, serial, anime, donghua, dan dracin langsung dari NOVA Play
-- 🏠 Beranda sinematis: hero, Top 10, filter Serial · Film · Anime · Donghua, dan kategori
-- 🔎 Pencarian, Baru & Populer, Daftar Saya, serta pilihan profil penonton
-- ▶️ Pemutar landscape layar penuh dengan kontrol Xflix untuk semua sumber
-- 🔒 Kunci layar, kecepatan putar, maju/mundur 10 detik, dan ketuk dua kali untuk seek
-- 📺 Ganti episode dan server tanpa keluar dari pemutar, lanjut di detik yang sama
+- 🍿 **Gratis**, tanpa langganan dan tanpa akun berbayar
+- 🎬 **Satu aplikasi, semua genre**: film, serial, anime, donghua, dan dracin
+- 🔥 **Selalu segar**: katalog diperbarui langsung dari NOVA Play
+- 🇮🇩 **Banyak judul bersubtitle Indonesia**, siap ditonton tanpa repot
+- 🎞️ **Pemutar layar penuh yang bersih**, tanpa tombol berantakan dari situs sumber
+- ⚡ **Ringan**, hanya ±3,7 MB karena video diputar langsung secara streaming
 
-## Pemutar
+## Koleksi
 
-Pemutar dirancang supaya nyaman dipakai: satu ketukan hanya memunculkan atau menyembunyikan kontrol, dan video baru berhenti kalau tombol tengah ditekan.
+| | Kategori | Yang menanti |
+| :---: | --- | --- |
+| 🎬 | **Film** | Rilisan terbaru dari berbagai negara dan genre |
+| 📺 | **Serial** | Cerita panjang yang bisa ditonton maraton |
+| 🌸 | **Anime** | Ratusan judul, dari yang sedang tayang sampai klasik |
+| 🐉 | **Donghua** | Animasi China, termasuk judul yang sedang tayang |
+| 💞 | **Dracin** | Drama China pilihan dari kanal resmi |
 
-| Aksi | Hasil |
-| --- | --- |
-| **Ketuk sekali** | Tampilkan / sembunyikan kontrol, video tetap berjalan |
-| **Tombol tengah** | Jeda atau putar |
-| **Ketuk dua kali** kiri / kanan | Mundur / maju 10 detik |
-| **Geser bilah merah** | Lompat ke menit tertentu, area abu-abu menandai buffer |
-| **Kunci** | Sentuhan dan tombol Kembali diabaikan sampai kunci dibuka |
-| **Kecepatan** | 0.5x · 0.75x · 1x · 1.25x · 1.5x |
-| **Episode** / **Episode Berikutnya** | Pilih episode dari panel; urutan daftar yang menurun ikut terdeteksi |
-| **Server** | Pindah sumber dan lanjut dari detik terakhir |
+## Pengalaman Menonton
 
-Kontrol hilang sendiri setelah 3,5 detik saat video berjalan dan tetap tampil saat dijeda.
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>🏠 Beranda sinematis</h3>
+      Hero besar, Top 10 hari ini, dan rak tontonan per kategori. Pilihan berikutnya selalu ada di depan mata.
+    </td>
+    <td width="50%" valign="top">
+      <h3>▶️ Pemutar yang tenang</h3>
+      Kontrol muncul saat dibutuhkan dan menghilang saat cerita dimulai. Yang tersisa hanya kamu dan filmnya.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>📚 Episode tanpa jeda</h3>
+      Lanjut ke episode berikutnya atau lompat ke episode mana pun tanpa keluar dari layar tonton.
+    </td>
+    <td width="50%" valign="top">
+      <h3>🔁 Banyak server</h3>
+      Satu sumber sedang lambat? Pindah server dan tontonan berlanjut dari detik yang sama.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>🔒 Kunci layar</h3>
+      Tonton sambil rebahan tanpa takut tersentuh tidak sengaja.
+    </td>
+    <td width="50%" valign="top">
+      <h3>👨‍👩‍👧 Profil keluarga</h3>
+      Setiap anggota keluarga punya profilnya sendiri, termasuk profil khusus anak-anak.
+    </td>
+  </tr>
+</table>
 
-### Cara kerja embed
+## Install Sekarang
 
-Sebagian besar sumber NOVA Play berupa embed (Vidhide, Dailymotion, Morencius, YouTube) yang punya kontrolnya sendiri. Agar tidak ada dua lapis kontrol yang bentrok:
+<div align="center">
 
-1. [`player_bridge.js`](app/src/main/assets/player_bridge.js) disuntikkan ke semua frame lewat `androidx.webkit` (`addDocumentStartJavaScript` + `addWebMessageListener`).
-2. Skrip memilih elemen `<video>` utama, melaporkan posisi, durasi, buffer, dan status putar ke aplikasi, lalu menjalankan perintah putar, jeda, seek, dan kecepatan.
-3. Saat video mulai, UI bawaan sumber dan popup iklan disembunyikan. Yang tersisa hanya video dan subtitle-nya.
-4. Lapisan sentuh Compose menutup WebView, jadi semua ketukan ditangani Xflix.
+<a href="https://github.com/mrizky-fr/xflix-apps/raw/main/release/Xflix-Novaplay.apk"><img src="https://img.shields.io/badge/Download%20%26%20Install%20Now-APK%201.0.3-E50914?style=for-the-badge&logo=android&logoColor=white" alt="Download & Install Now" height="42" /></a>
 
-Bila sumber tidak bisa dikendalikan dalam 10 detik (25 detik jika pemutarnya sudah terdeteksi), layar beralih ke kontrol bawaan sumber. Bar atas berisi Kembali, Server, dan Episode tetap tersedia, dan kontrol Xflix aktif lagi begitu video berjalan.
+</div>
 
-## Tech Stack
+1. Unduh APK lewat tombol di atas.
+2. Buka file yang terunduh. Bila diminta, izinkan pemasangan dari sumber ini.
+3. Pasang, buka **Xflix - Novaplay**, dan selamat menonton.
+
+## Dibangun Dengan
 
 <p align="center">
   <img src="https://skillicons.dev/icons?i=kotlin" alt="Kotlin" title="Kotlin" width="48" height="48" />&nbsp;
@@ -62,55 +89,29 @@ Bila sumber tidak bisa dikendalikan dalam 10 detik (25 detik jika pemutarnya sud
   <img src="https://skillicons.dev/icons?i=js" alt="JavaScript" title="JavaScript" width="48" height="48" />
 </p>
 
-| Bagian | Teknologi |
-| --- | --- |
-| **UI** | Jetpack Compose, Material 3, Navigation Compose, font Inter |
-| **Pemutar native** | Media3 ExoPlayer + HLS untuk URL MP4/HLS langsung |
-| **Pemutar embed** | WebView + `androidx.webkit` dengan jembatan JavaScript |
-| **Data** | `HttpURLConnection` + `org.json` ke API NOVA Play |
-| **Build** | Gradle, Android SDK 36, minSdk 26, R8 untuk rilis |
+<p align="center"><sub>Kotlin · Jetpack Compose · Media3 · WebView · Katalog dari <a href="https://github.com/Lukman0521/nova-play">NOVA Play</a></sub></p>
 
-## Sumber Data
+<details>
+<summary><b>Untuk developer</b></summary>
 
-Base URL produksi ada di `NovaApi.BASE` dalam [`Catalog.kt`](app/src/main/java/com/xflix/app/data/Catalog.kt).
+<br>
 
-| Endpoint | Kegunaan |
-| --- | --- |
-| `GET /api/catalog` | Katalog utama; Anime dan Donghua dipisah menurut field `kind` |
-| `GET /api/playback/{id}` | Film dan serial, tambah `?episode={id}` untuk episode serial |
-| `GET /api/anime/{id}` | Detail dan daftar episode anime, donghua, dan dracin |
-| `GET /api/anime/{id}/{episode}` | Daftar server untuk satu episode |
-
-## Struktur Proyek
-
-| Path | Isi |
-| --- | --- |
-| [`data/`](app/src/main/java/com/xflix/app/data) | Klien API NOVA Play dan model katalog |
-| [`ui/home`](app/src/main/java/com/xflix/app/ui/home), [`detail`](app/src/main/java/com/xflix/app/ui/detail), [`search`](app/src/main/java/com/xflix/app/ui/search), [`newhot`](app/src/main/java/com/xflix/app/ui/newhot), [`my`](app/src/main/java/com/xflix/app/ui/my), [`profiles`](app/src/main/java/com/xflix/app/ui/profiles) | Layar-layar aplikasi |
-| [`ui/player/PlayerScreen.kt`](app/src/main/java/com/xflix/app/ui/player/PlayerScreen.kt) | Layar pemutar: gesture, kunci, auto-hide, panel episode & server |
-| [`ui/player/PlayerControls.kt`](app/src/main/java/com/xflix/app/ui/player/PlayerControls.kt) | Komponen kontrol pemutar |
-| [`ui/player/StreamEngine.kt`](app/src/main/java/com/xflix/app/ui/player/StreamEngine.kt) | Mesin Media3 dan WebView beserta jembatannya |
-| [`assets/player_bridge.js`](app/src/main/assets/player_bridge.js) | Skrip pengendali video di dalam iframe |
-| [`ui/theme`](app/src/main/java/com/xflix/app/ui/theme) | Warna, tipografi, dan motion |
-
-## Build
-
-Gunakan JDK bawaan Android Studio:
+Build dengan JDK bawaan Android Studio:
 
 ```powershell
 $env:JAVA_HOME = 'C:\Program Files\Android\Android Studio\jbr'
-.\gradlew.bat :app:assembleDebug     # APK debug (com.xflix.app.debug)
-.\gradlew.bat :app:assembleRelease   # APK rilis
+.\gradlew.bat :app:assembleRelease
 ```
 
-APK rilis dibuat di `app/build/outputs/apk/release/`. Versi yang siap dibagikan ditempatkan di `../dist/Xflix-1.0.3.apk`.
+APK rilis dibuat di `app/build/outputs/apk/release/`, lalu disalin ke [`release/Xflix-Novaplay.apk`](release/Xflix-Novaplay.apk) untuk tombol unduh. Signing memakai `keystore.properties` (lihat [`keystore.properties.example`](keystore.properties.example)) atau env `XFLIX_KEYSTORE_FILE`, `XFLIX_KEYSTORE_PASSWORD`, `XFLIX_KEY_ALIAS`, `XFLIX_KEY_PASSWORD`.
 
-Untuk menandatangani APK rilis, salin [`keystore.properties.example`](keystore.properties.example) menjadi `keystore.properties` lalu isi password-nya, atau set env `XFLIX_KEYSTORE_FILE`, `XFLIX_KEYSTORE_PASSWORD`, `XFLIX_KEY_ALIAS`, dan `XFLIX_KEY_PASSWORD`. File keystore dan `keystore.properties` sudah di-gitignore. Gunakan keystore yang sama di setiap rilis supaya aplikasi yang sudah terpasang bisa di-update.
+API NOVA Play yang dipakai: `GET /api/catalog`, `GET /api/playback/{id}`, `GET /api/anime/{id}`, dan `GET /api/anime/{id}/{episode}`. Pemutar embed dikendalikan oleh [`player_bridge.js`](app/src/main/assets/player_bridge.js).
+
+</details>
 
 ## Catatan
 
-- Xflix tidak menyimpan atau meng-hosting video. Ketersediaan video, iklan, dan subtitle mengikuti sumber yang disediakan NOVA Play.
-- Iklan pre-roll yang diputar di dalam video embed tetap tampil karena bagian dari sumbernya.
+Xflix tidak menyimpan atau meng-hosting video. Semua tontonan diputar dari sumber pihak ketiga melalui NOVA Play, sehingga ketersediaan judul, iklan, dan subtitle mengikuti sumbernya.
 
 ## Pembuat
 
