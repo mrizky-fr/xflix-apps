@@ -2,9 +2,9 @@
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:FF7A45,100:E50914&height=200&section=header&text=Xflix&fontColor=ffffff&fontSize=56&fontAlignY=36&desc=Streaming%20Video%20Gratis%20%C2%B7%20Film%2C%20Serial%20dan%20Anime&descSize=18&descAlignY=58" alt="Xflix — Streaming Video Gratis · Film, Serial dan Anime" width="100%" />
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=18&duration=3000&pause=1000&color=E50914&center=true&vCenter=true&width=640&lines=Nonton+gratis%2C+tanpa+langganan;Film+%C2%B7+Serial+%C2%B7+Anime+%C2%B7+Donghua+%C2%B7+Dracin;Ratusan+judul+dalam+satu+aplikasi" alt="Nonton gratis, tanpa langganan" />
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=18&duration=3000&pause=1000&color=E50914&center=true&vCenter=true&width=640&lines=Nonton+gratis%2C+tanpa+langganan;Film+%C2%B7+Serial+%C2%B7+Anime+%C2%B7+Donghua+%C2%B7+Kartun;Ratusan+judul+dalam+satu+aplikasi" alt="Nonton gratis, tanpa langganan" />
 
-<a href="https://github.com/mrizky-fr/xflix-apps/raw/main/release/Xflix-Novaplay.apk"><img src="https://img.shields.io/badge/Download%20%26%20Install%20Now-APK%201.0.4-E50914?style=for-the-badge" alt="Download & Install Now" height="42" /></a>
+<a href="https://github.com/mrizky-fr/xflix-apps/raw/main/release/Xflix-Novaplay.apk"><img src="https://img.shields.io/badge/Download%20%26%20Install%20Now-APK%201.0.5-E50914?style=for-the-badge" alt="Download & Install Now" height="42" /></a>
 
 <sub>Android 8.0+ · ±3,7 MB · Gratis</sub>
 
@@ -22,7 +22,7 @@ Setiap judul hadir dalam tampilan sinematis yang bersih: poster besar, deretan T
 - **Banyak judul bersubtitle Indonesia**, siap ditonton tanpa repot
 - **Pemutar layar penuh yang bersih**, tanpa tombol berantakan dari situs sumber
 - **Ringan**, hanya ±3,7 MB karena video diputar langsung secara streaming
-- **Pada Zaman Dahulu (PZD)** dari [playlist YouTube](https://www.youtube.com/playlist?list=PLLQoIst01CaXoNrLogHiHncjpxvmb7bbQ), 52 episode dalam enam musim
+- **Kartun keluarga**: Upin & Ipin Musim 1 sampai 19, Upin & Ipin Iqra, dan Pada Zaman Dahulu
 
 ## Koleksi
 
@@ -33,6 +33,7 @@ Setiap judul hadir dalam tampilan sinematis yang bersih: poster besar, deretan T
 | **Anime** | Ratusan judul, dari yang sedang tayang sampai klasik |
 | **Donghua** | Animasi China, termasuk judul yang sedang tayang |
 | **Dracin** | Drama China pilihan dari kanal resmi |
+| **Kartun** | Upin & Ipin 19 musim, Upin & Ipin Iqra, kumpulan spesial Ramadan dan petualangan, serta Pada Zaman Dahulu |
 
 ## Pengalaman Menonton
 
@@ -73,7 +74,7 @@ Setiap judul hadir dalam tampilan sinematis yang bersih: poster besar, deretan T
 
 <div align="center">
 
-<a href="https://github.com/mrizky-fr/xflix-apps/raw/main/release/Xflix-Novaplay.apk"><img src="https://img.shields.io/badge/Download%20%26%20Install%20Now-APK%201.0.4-E50914?style=for-the-badge" alt="Download & Install Now" height="42" /></a>
+<a href="https://github.com/mrizky-fr/xflix-apps/raw/main/release/Xflix-Novaplay.apk"><img src="https://img.shields.io/badge/Download%20%26%20Install%20Now-APK%201.0.5-E50914?style=for-the-badge" alt="Download & Install Now" height="42" /></a>
 
 </div>
 
@@ -106,13 +107,13 @@ $env:JAVA_HOME = 'C:\Program Files\Android\Android Studio\jbr'
 
 APK rilis dibuat di `app/build/outputs/apk/release/`, lalu disalin ke [`release/Xflix-Novaplay.apk`](release/Xflix-Novaplay.apk) untuk tombol unduh. Signing memakai `keystore.properties` (lihat [`keystore.properties.example`](keystore.properties.example)) atau env `XFLIX_KEYSTORE_FILE`, `XFLIX_KEYSTORE_PASSWORD`, `XFLIX_KEY_ALIAS`, `XFLIX_KEY_PASSWORD`.
 
-API NOVA Play yang dipakai: `GET /api/catalog`, `GET /api/playback/{id}`, `GET /api/anime/{id}`, dan `GET /api/anime/{id}/{episode}`. PZD memakai embed YouTube resmi; embed sumber lain dikendalikan oleh [`player_bridge.js`](app/src/main/assets/player_bridge.js).
+API NOVA Play yang dipakai: `GET /api/catalog`, `GET /api/playback/{id}`, `GET /api/anime/{id}`, dan `GET /api/anime/{id}/{episode}`. Kartun memakai embed YouTube resmi dari katalog [`youtube_catalog.json`](app/src/main/resources/youtube_catalog.json), yang dibuat ulang dengan `python tools/youtube_catalog.py`; embed sumber lain dikendalikan oleh [`player_bridge.js`](app/src/main/assets/player_bridge.js).
 
 </details>
 
 ## Catatan
 
-Xflix tidak menyimpan atau meng-hosting video. Katalog utama mengambil sumber dari NOVA Play, sementara PZD memakai playlist YouTube. Ketersediaan judul, iklan, dan subtitle mengikuti sumbernya.
+Xflix tidak menyimpan atau meng-hosting video. Katalog utama mengambil sumber dari NOVA Play, sementara kartun diputar dari playlist YouTube. Ketersediaan judul, iklan, dan subtitle mengikuti sumbernya.
 
 ## Pembuat
 
