@@ -101,6 +101,7 @@ import com.xflix.app.ui.theme.Motion
 import com.xflix.app.ui.theme.Space
 import com.xflix.app.ui.theme.XColors
 import com.xflix.app.ui.theme.XType
+import kotlin.random.Random
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -154,10 +155,11 @@ fun HomeScreen(
     var categoriesOpen by rememberSaveable { mutableStateOf(false) }
 
     val rows = remember(filter, vm.myList.toList()) { buildRows(filter, vm.myList) }
+    // Highlight acak dari Top 10
     val hero = remember(filter) {
-        Catalog.available
-            .filter(filter::matches)
-            .minByOrNull { it.top10 ?: 99 } ?: Catalog.available.first()
+        val pool = Catalog.available.filter(filter::matches)
+        pool.filter { it.top10 != null }.ifEmpty { pool }
+            .randomOrNull(Random(Catalog.seed + filter.hashCode())) ?: Catalog.available.first()
     }
 
     // Chip sembunyi saat gulir turun

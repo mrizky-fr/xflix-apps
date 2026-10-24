@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 import java.net.HttpURLConnection
 import java.net.URL
 import java.time.LocalDate
+import kotlin.random.Random
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -67,20 +68,29 @@ object Catalog {
         return titles.filter { it.name.lowercase().contains(q) || it.moods.any { m -> m.lowercase().contains(q) } }
     }
 
+    /** Acak per sesi, stabil selama app terbuka */
+    var seed = Random.nextInt()
+        private set
+
     suspend fun refresh() {
         val data = NovaApi.get("/api/catalog")
         val youtube = withContext(Dispatchers.IO) { YouTubeCatalog.titles }
-        val all = buildList {
+        val popular = buildList {
             data.optJSONArray("movies")?.objects()?.forEachIndexed { i, item -> add(fromRemote(item, "film", i)) }
             data.optJSONArray("dracin")?.objects()?.forEachIndexed { i, item -> add(fromRemote(item, "anime", i)) }
             data.optJSONArray("serials")?.objects()?.forEachIndexed { i, item -> add(fromRemote(item, "anime", i)) }
+        }
+        val library = buildList {
             data.optJSONArray("animeLibrary")?.objects()?.forEach { add(fromRemote(it, "anime", null)) }
             data.optJSONArray("donghuaLibrary")?.objects()?.forEach { add(fromRemote(it, "anime", null)) }
-            addAll(youtube)
-        }.distinctBy { it.id }
+        }
+        val all = (popular + library + youtube).distinctBy { it.id }
         if (all.isEmpty()) error("Katalog NOVA Play masih kosong.")
+        seed = Random.nextInt()
+        // Top 10 acak dari judul unggulan
+        val picks = (popular + youtube).map { it.id }.distinct().shuffled(Random(seed)).take(10)
         titles.clear()
-        titles.addAll(all)
+        titles.addAll(all.map { title -> title.copy(top10 = picks.indexOf(title.id).takeIf { it >= 0 }?.plus(1)) })
     }
 
     suspend fun ensureDetails(id: String): Title {
@@ -137,7 +147,6 @@ object Catalog {
             tint = Color(0xFF252B36),
             style = TitleStyle.Condensed,
             seasons = if (isSeries) listOf(Season(1, episodes)) else emptyList(),
-            top10 = rank?.takeIf { it < 10 }?.plus(1),
             newEpisodes = rank != null && source == "anime",
             imageUrl = item.optString("image").takeIf { it.startsWith("https://") },
             remoteSource = source,
