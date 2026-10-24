@@ -11,6 +11,7 @@ import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -29,7 +30,12 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.HttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy
+import androidx.media3.exoplayer.upstream.LoadErrorHandlingPolicy
 import androidx.media3.ui.PlayerView
 import androidx.webkit.JavaScriptReplyProxy
 import androidx.webkit.WebViewCompat
@@ -124,10 +130,15 @@ internal class StreamState {
 }
 
 /** MP4/HLS langsung lewat Media3 */
+@OptIn(UnstableApi::class)
 @Composable
 internal fun NativeStream(url: String, startAt: Float, state: StreamState, modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    val exo = remember { ExoPlayer.Builder(context).build() }
+    val exo = remember {
+        ExoPlayer.Builder(context)
+            .setMediaSourceFactory(DefaultMediaSourceFactory(context).setLoadErrorHandlingPolicy(BusyRetry))
+            .build()
+    }
     DisposableEffect(exo) {
         val listener = object : Player.Listener {
             override fun onPlayerError(error: PlaybackException) {
@@ -178,6 +189,18 @@ internal fun NativeStream(url: String, startAt: Float, state: StreamState, modif
         onRelease = { it.player = null },
         modifier = modifier,
     )
+}
+
+/** 429: tunggu lalu coba lagi */
+@OptIn(UnstableApi::class)
+private object BusyRetry : DefaultLoadErrorHandlingPolicy() {
+    override fun getRetryDelayMsFor(info: LoadErrorHandlingPolicy.LoadErrorInfo): Long {
+        val error = info.exception
+        return if (error is HttpDataSource.InvalidResponseCodeException && error.responseCode == 429) 12_000L
+        else super.getRetryDelayMsFor(info)
+    }
+
+    override fun getMinimumLoadableRetryCount(dataType: Int): Int = 6
 }
 
 /** Embed iframe lewat jembatan JS */

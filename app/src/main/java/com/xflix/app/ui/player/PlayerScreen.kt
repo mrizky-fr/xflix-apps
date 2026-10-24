@@ -59,6 +59,8 @@ import com.xflix.app.data.Catalog
 import com.xflix.app.data.Episode
 import com.xflix.app.data.Kind
 import com.xflix.app.data.NovaApi
+import com.xflix.app.data.Platform
+import com.xflix.app.data.ShortDrama
 import com.xflix.app.data.Title
 import com.xflix.app.ui.components.LocalToaster
 import com.xflix.app.ui.components.XImage
@@ -108,7 +110,7 @@ fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> 
     var panelSeason by remember { mutableIntStateOf(season) }
     var flash by remember { mutableStateOf<SeekFlash?>(null) }
 
-    ImmersiveLandscape()
+    ImmersivePlayer(portrait = title.vertical)
 
     // Muat server episode aktif
     LaunchedEffect(id, season, episode, retry) {
@@ -470,11 +472,16 @@ private fun Modifier.onAnyTouch(enabled: Boolean, onTouch: () -> Unit): Modifier
     }
 
 private suspend fun loadSources(id: String, season: Int, episode: Int): List<StreamSource> {
-    val title = Catalog.ensureDetails(id)
+    // PineDrama tak butuh detail
+    val title = if (Catalog.title(id).platform == Platform.PineDrama) Catalog.title(id) else Catalog.ensureDetails(id)
     val episodeId = title.seasons.getOrNull(season - 1)?.episodes?.getOrNull(episode - 1)?.remoteId
     if (title.remoteSource == "youtube") {
         require(!episodeId.isNullOrBlank()) { "Episode YouTube belum tersedia." }
         return listOf(youtubeSource(episodeId))
+    }
+    if (title.vertical) {
+        val current = requireNotNull(title.seasons.getOrNull(season - 1)?.episodes?.getOrNull(episode - 1)) { "Episode belum tersedia." }
+        return ShortDrama.streams(title, current).map { (label, url) -> StreamSource(label, url, native = true) }
     }
     val base = Catalog.detailPath(title)
     val path = when {
@@ -506,12 +513,12 @@ private fun nextEpisode(episodes: List<Episode>, current: Int): Int? {
 private fun speedLabel(speed: Float): String =
     if (speed % 1f == 0f) "${speed.toInt()}x" else "${speed}x"
 
-/** Landscape dan imersif */
+/** Layar penuh, tegak bila perlu */
 @Composable
-private fun ImmersiveLandscape() {
+private fun ImmersivePlayer(portrait: Boolean) {
     val activity = LocalContext.current.findActivity()
     val view = LocalView.current
-    DisposableEffect(activity, view) {
+    DisposableEffect(activity, view, portrait) {
         if (activity == null) onDispose { }
         else {
             val window = activity.window
@@ -519,7 +526,8 @@ private fun ImmersiveLandscape() {
             val oldUiFlags = window.decorView.systemUiVisibility
             val controller = WindowCompat.getInsetsController(window, view)
             val oldBehavior = controller.systemBarsBehavior
-            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+            activity.requestedOrientation =
+                if (portrait) ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT else ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
             controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             window.decorView.systemUiVisibility = oldUiFlags or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN

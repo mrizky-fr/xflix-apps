@@ -18,6 +18,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -131,11 +132,13 @@ internal fun Controls(
     onAudio: () -> Unit,
     onNext: () -> Unit,
 ) {
-    Box(
+    BoxWithConstraints(
         Modifier
             .fillMaxSize()
             .padding(horizontal = Space.xl, vertical = Space.m)
     ) {
+        // Layar tegak: aksi bertumpuk
+        val compact = maxWidth < 600.dp
         PlayerTopBar(titleText, subtitle, onBack)
 
         Row(
@@ -193,12 +196,13 @@ internal fun Controls(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
-                PlayerAction(XIcons.Speed, speedLabel, onSpeed)
-                PlayerAction(XIcons.Lock, stringResource(R.string.player_lock), onLock)
-                if (isSeries) PlayerAction(XIcons.Episodes, stringResource(R.string.tab_episodes), onEpisodes)
-                if (hasServers) PlayerAction(XIcons.Settings, stringResource(R.string.player_server), onServers)
-                PlayerAction(XIcons.Subtitles, stringResource(R.string.player_audio), onAudio)
-                if (hasNext) PlayerAction(XIcons.NextEpisode, stringResource(R.string.player_next), onNext)
+                val item = if (compact) Modifier.weight(1f) else Modifier
+                PlayerAction(XIcons.Speed, speedLabel, item, compact, onSpeed)
+                PlayerAction(XIcons.Lock, stringResource(R.string.player_lock), item, compact, onLock)
+                if (isSeries) PlayerAction(XIcons.Episodes, stringResource(R.string.tab_episodes), item, compact, onEpisodes)
+                if (hasServers) PlayerAction(XIcons.Settings, stringResource(R.string.player_server), item, compact, onServers)
+                PlayerAction(XIcons.Subtitles, stringResource(R.string.player_audio), item, compact, onAudio)
+                if (hasNext) PlayerAction(XIcons.NextEpisode, stringResource(R.string.player_next), item, compact, onNext)
             }
         }
     }
@@ -337,17 +341,28 @@ private fun Scrubber(
 }
 
 @Composable
-internal fun PlayerAction(icon: ImageVector, label: String, onClick: () -> Unit) {
-    Row(
-        Modifier
-            .clip(RoundedCornerShape(4.dp))
-            .clickable(onClick = onClick)
-            .padding(horizontal = Space.s, vertical = Space.s),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
-        Spacer(Modifier.width(6.dp))
-        Text(label, style = XType.Label.copy(fontSize = 12.sp), maxLines = 1, softWrap = false)
+internal fun PlayerAction(
+    icon: ImageVector,
+    label: String,
+    modifier: Modifier = Modifier,
+    stacked: Boolean = false,
+    onClick: () -> Unit,
+) {
+    val shape = modifier
+        .clip(RoundedCornerShape(4.dp))
+        .clickable(onClick = onClick)
+    if (stacked) {
+        Column(shape.padding(vertical = Space.xs), horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
+            Spacer(Modifier.height(Space.xs))
+            Text(label, style = XType.Label.copy(fontSize = 10.sp, lineHeight = 12.sp), maxLines = 2, textAlign = TextAlign.Center)
+        }
+    } else {
+        Row(shape.padding(horizontal = Space.s, vertical = Space.s), verticalAlignment = Alignment.CenterVertically) {
+            Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
+            Spacer(Modifier.width(6.dp))
+            Text(label, style = XType.Label.copy(fontSize = 12.sp), maxLines = 1, softWrap = false)
+        }
     }
 }
 
