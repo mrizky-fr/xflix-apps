@@ -279,7 +279,7 @@ fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> 
             exit = fadeOut(tween(Motion.Medium)),
         ) {
             Box(Modifier.fillMaxSize()) {
-                XImage(0, Modifier.fillMaxSize(), displayWidth = 900.dp, eager = true, placeholder = Color.Black, url = title.imageUrl)
+                XImage(title.backdrop, Modifier.fillMaxSize(), displayWidth = 900.dp, eager = true, placeholder = Color.Black, url = title.imageUrl)
                 Box(
                     Modifier
                         .fillMaxSize()
