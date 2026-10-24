@@ -67,6 +67,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xflix.app.R
 import com.xflix.app.data.Episode
+import com.xflix.app.data.Season
 import com.xflix.app.ui.components.BarIcon
 import com.xflix.app.ui.components.XButton
 import com.xflix.app.ui.components.XImage
@@ -350,6 +351,39 @@ internal fun PlayerAction(icon: ImageVector, label: String, onClick: () -> Unit)
     }
 }
 
+internal val RailWidth = 72.dp
+
+/** Rel samping, tidak menimpa video */
+@Composable
+internal fun PlayerRail(onBack: () -> Unit, modifier: Modifier = Modifier, actions: @Composable ColumnScope.() -> Unit = {}) {
+    Column(
+        modifier
+            .fillMaxHeight()
+            .width(RailWidth)
+            .padding(vertical = Space.m),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(Space.l),
+    ) {
+        BarIcon(XIcons.Back, stringResource(R.string.action_back), onBack)
+        actions()
+    }
+}
+
+@Composable
+internal fun RailAction(icon: ImageVector, label: String, onClick: () -> Unit) {
+    Column(
+        Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .clickable(onClick = onClick)
+            .padding(horizontal = Space.xs, vertical = Space.s),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(22.dp))
+        Spacer(Modifier.height(Space.xs))
+        Text(label, style = XType.Caption.copy(color = Color.White, fontSize = 10.sp), maxLines = 1)
+    }
+}
+
 /** Memuat sebelum video main */
 @Composable
 internal fun PlayerLoading(caption: String, modifier: Modifier = Modifier) {
@@ -423,6 +457,9 @@ private fun PlayerSheet(heading: String, onClose: () -> Unit, content: @Composab
 
 @Composable
 internal fun EpisodePanel(
+    seasons: List<Season>,
+    selectedSeason: Int,
+    onSeasonSelect: (Int) -> Unit,
     episodes: List<Episode>,
     current: Int,
     label: (Episode) -> String,
@@ -432,6 +469,26 @@ internal fun EpisodePanel(
     // Langsung ke episode aktif
     val list = rememberLazyListState(initialFirstVisibleItemIndex = (current - 1).coerceIn(0, (episodes.size - 1).coerceAtLeast(0)))
     PlayerSheet(stringResource(R.string.tab_episodes), onClose) {
+        if (seasons.size > 1) {
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = Space.xl),
+                horizontalArrangement = Arrangement.spacedBy(Space.s),
+            ) {
+                itemsIndexed(seasons) { _, season ->
+                    val active = season.number == selectedSeason
+                    Text(
+                        stringResource(R.string.season_label, season.number),
+                        style = XType.Label,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(5.dp))
+                            .background(if (active) XColors.Red else XColors.SurfaceHigh)
+                            .clickable { onSeasonSelect(season.number) }
+                            .padding(horizontal = Space.m, vertical = Space.s),
+                    )
+                }
+            }
+            Spacer(Modifier.height(Space.m))
+        }
         LazyRow(
             state = list,
             contentPadding = PaddingValues(horizontal = Space.xl),

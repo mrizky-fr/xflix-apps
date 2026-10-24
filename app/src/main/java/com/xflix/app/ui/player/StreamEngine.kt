@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.SystemClock
 import android.text.TextUtils
 import android.view.ViewGroup
+import android.webkit.CookieManager
 import android.webkit.RenderProcessGoneDetail
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
@@ -22,6 +23,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -36,6 +40,15 @@ import kotlinx.coroutines.delay
 import org.json.JSONObject
 
 internal data class StreamSource(val label: String, val url: String, val native: Boolean)
+
+internal fun youtubeSource(videoId: String): StreamSource {
+    require(videoId.matches(Regex("[A-Za-z0-9_-]{11}")))
+    return StreamSource(
+        "YouTube",
+        "https://www.youtube.com/embed/$videoId?autoplay=1&playsinline=1&controls=1&rel=0&fs=0&enablejsapi=1",
+        false,
+    )
+}
 
 internal interface StreamCommands {
     fun play()
@@ -173,8 +186,10 @@ internal fun NativeStream(url: String, startAt: Float, state: StreamState, modif
 internal fun EmbedStream(url: String, startAt: Float, state: StreamState, modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val bridge = remember { EmbedBridge(state, startAt) }
-    val script = remember {
-        runCatching { context.assets.open("player_bridge.js").bufferedReader().use { it.readText() } }.getOrNull()
+    val isYouTube = remember(url) { Uri.parse(url).host == "www.youtube.com" }
+    val script = remember(isYouTube) {
+        if (isYouTube) null
+        else runCatching { context.assets.open("player_bridge.js").bufferedReader().use { it.readText() } }.getOrNull()
     }
     // Tanpa jembatan, pakai kontrol sumber
     LaunchedEffect(bridge) {
@@ -187,10 +202,20 @@ internal fun EmbedStream(url: String, startAt: Float, state: StreamState, modifi
         }
         if (!state.started) state.direct = true
     }
+    var view by remember { mutableStateOf<WebView?>(null) }
+    // YouTube dijeda saat ditinggal
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    DisposableEffect(lifecycle, isYouTube) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (isYouTube && event == Lifecycle.Event.ON_PAUSE) view?.evaluateJavascript(YouTubePause, null)
+        }
+        lifecycle.addObserver(observer)
+        onDispose { lifecycle.removeObserver(observer) }
+    }
     AndroidView(
         modifier = modifier,
         factory = { ctx ->
-            WebView(ctx).apply {
+            WebView(ctx).also { view = it }.apply {
                 layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
                 setBackgroundColor(android.graphics.Color.BLACK)
                 settings.javaScriptEnabled = true
@@ -198,11 +223,12 @@ internal fun EmbedStream(url: String, startAt: Float, state: StreamState, modifi
                 settings.mediaPlaybackRequiresUserGesture = false
                 settings.setSupportMultipleWindows(false)
                 settings.javaScriptCanOpenWindowsAutomatically = false
+                if (isYouTube) CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
                 webChromeClient = WebChromeClient()
                 webViewClient = object : WebViewClient() {
                     // Iklan tidak boleh pindah halaman
                     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean =
-                        request.isForMainFrame && request.url.host != Uri.parse(NovaApi.BASE).host
+                        request.isForMainFrame && request.url.host != if (isYouTube) ctx.packageName else Uri.parse(NovaApi.BASE).host
 
                     override fun onRenderProcessGone(view: WebView, detail: RenderProcessGoneDetail): Boolean {
                         state.failed = true
@@ -210,10 +236,13 @@ internal fun EmbedStream(url: String, startAt: Float, state: StreamState, modifi
                     }
                 }
                 if (script != null) bridge.install(this, script)
-                loadDataWithBaseURL(NovaApi.BASE, embedPage(url), "text/html", "UTF-8", null)
+                // Referer wajib untuk YouTube
+                val baseUrl = if (isYouTube) "https://${ctx.packageName}/" else NovaApi.BASE
+                loadDataWithBaseURL(baseUrl, embedPage(url), "text/html", "UTF-8", null)
             }
         },
         onRelease = {
+            view = null
             bridge.release()
             it.stopLoading()
             it.destroy()
@@ -221,10 +250,14 @@ internal fun EmbedStream(url: String, startAt: Float, state: StreamState, modifi
     )
 }
 
+// Perintah resmi IFrame API YouTube
+private const val YouTubePause =
+    """document.querySelector('iframe').contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*')"""
+
 private fun embedPage(url: String): String {
     val safeUrl = TextUtils.htmlEncode(url)
     return """<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"></head>""" +
-        """<body style="margin:0;background:#000"><iframe src="$safeUrl" style="position:fixed;inset:0;width:100%;height:100%;border:0" """ +
+        """<body style="margin:0;background:#000"><iframe src="$safeUrl" referrerpolicy="strict-origin-when-cross-origin" style="position:fixed;inset:0;width:100%;height:100%;border:0" """ +
         """allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen></iframe></body></html>"""
 }
 
@@ -334,7 +367,7 @@ internal fun JSONObject.streamSources(): List<StreamSource> {
     }
     val videoId = optString("videoId")
     if (optString("format") == "youtube" && videoId.matches(Regex("[A-Za-z0-9_-]{11}"))) {
-        result += StreamSource("YouTube", "https://www.youtube-nocookie.com/embed/$videoId?autoplay=1&playsinline=1", false)
+        result += youtubeSource(videoId)
     }
     val media = optString("url")
     if (optString("format") in listOf("mp4", "hls") && media.isNotBlank()) {

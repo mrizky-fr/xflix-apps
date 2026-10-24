@@ -75,6 +75,7 @@ object Catalog {
             data.optJSONArray("serials")?.objects()?.forEachIndexed { i, item -> add(fromRemote(item, "anime", i)) }
             data.optJSONArray("animeLibrary")?.objects()?.forEach { add(fromRemote(it, "anime", null)) }
             data.optJSONArray("donghuaLibrary")?.objects()?.forEach { add(fromRemote(it, "anime", null)) }
+            add(PzdCatalog.title)
         }.distinctBy { it.id }
         if (all.isEmpty()) error("Katalog NOVA Play masih kosong.")
         titles.clear()

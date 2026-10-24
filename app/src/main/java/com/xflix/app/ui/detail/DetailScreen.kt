@@ -345,7 +345,11 @@ private fun DetailInfo(title: Title, vm: XflixViewModel, onPlay: () -> Unit, onS
             val online = rememberOnline()
             Spacer(Modifier.height(Space.s))
             Text(
-                stringResource(if (online) R.string.detail_streaming else R.string.detail_streaming_offline),
+                stringResource(when {
+                    !online -> R.string.detail_streaming_offline
+                    title.remoteSource == "youtube" -> R.string.detail_streaming_youtube
+                    else -> R.string.detail_streaming
+                }),
                 style = XType.Caption.copy(fontSize = 12.5.sp, color = if (online) XColors.TextSecondary else XColors.Warning),
             )
         }

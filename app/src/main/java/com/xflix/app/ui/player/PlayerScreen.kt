@@ -75,14 +75,15 @@ private enum class PlayerPanel { Episodes, Servers }
 fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> Unit) {
     val title = Catalog.title(id)
     val isSeries = title.kind == Kind.Series
-    val episodes = title.seasons.firstOrNull()?.episodes.orEmpty()
     val toaster = LocalToaster.current
     val audioMessage = stringResource(R.string.toast_audio)
     val directMessage = stringResource(R.string.player_direct_hint)
     val noSource = stringResource(R.string.player_no_source)
     val streamFailed = stringResource(R.string.player_stream_failed_body)
 
+    var season by rememberSaveable(id) { mutableIntStateOf(startSeason.coerceIn(1, title.seasons.size.coerceAtLeast(1))) }
     var episode by rememberSaveable(id) { mutableIntStateOf(startEpisode.coerceAtLeast(1)) }
+    val episodes = title.seasons.getOrNull(season - 1)?.episodes.orEmpty()
     var server by rememberSaveable(id) { mutableIntStateOf(0) }
     var sources by remember(id) { mutableStateOf<List<StreamSource>>(emptyList()) }
     var loading by remember(id) { mutableStateOf(true) }
@@ -99,17 +100,18 @@ fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> 
     var scrubAt by remember { mutableFloatStateOf(0f) }
     var panel by remember { mutableStateOf<PlayerPanel?>(null) }
     var lastPanel by remember { mutableStateOf(PlayerPanel.Episodes) }
+    var panelSeason by remember { mutableIntStateOf(season) }
     var flash by remember { mutableStateOf<SeekFlash?>(null) }
 
     ImmersiveLandscape()
 
     // Muat server episode aktif
-    LaunchedEffect(id, episode, retry) {
+    LaunchedEffect(id, season, episode, retry) {
         loading = true
         error = null
         sources = emptyList()
         try {
-            val loaded = loadSources(id, episode)
+            val loaded = loadSources(id, season, episode)
             server = server.coerceIn(0, (loaded.size - 1).coerceAtLeast(0))
             sources = loaded
             if (loaded.isEmpty()) error = noSource
@@ -123,13 +125,21 @@ fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> 
     }
 
     val source = sources.getOrNull(server)
+    val youtubePlayback = title.remoteSource == "youtube" || source?.url?.startsWith("https://www.youtube.com/embed/") == true
     val state = remember(source, retry) { StreamState() }
     val passthrough = state.direct && !state.started
     val failed = error != null || state.failed
     val waiting = !failed && !state.started && !passthrough
-    val subtitle = episodes.getOrNull(episode - 1)?.let { episodeLabel(title, it) }
+    // YouTube: kontrol sendiri, tanpa timpaan
+    val youtubeRail = youtubePlayback && passthrough && !failed
+    val seasonText = stringResource(R.string.season_label, season)
+    val subtitle = episodes.getOrNull(episode - 1)?.let {
+        val label = episodeLabel(title, it)
+        if (title.seasons.size > 1) "$seasonText · $label" else label
+    }
     val next = if (isSeries) nextEpisode(episodes, episode) else null
-    val hasEpisodes = isSeries && episodes.size > 1
+    val nextSeason = if (next == null && season < title.seasons.size) season + 1 else null
+    val hasEpisodes = isSeries && (episodes.size > 1 || title.seasons.size > 1)
     val hasServers = sources.size > 1
 
     fun seek(forward: Boolean) {
@@ -139,16 +149,18 @@ fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> 
     }
 
     fun openPanel(target: PlayerPanel) {
+        if (target == PlayerPanel.Episodes) panelSeason = season
         lastPanel = target
         panel = target
     }
 
-    fun openEpisode(number: Int) {
+    fun openEpisode(targetSeason: Int, number: Int) {
         panel = null
         controls = true
-        if (number == episode) return
+        if (targetSeason == season && number == episode) return
         resumeAt = 0f
         server = 0
+        season = targetSeason
         episode = number
     }
 
@@ -177,7 +189,7 @@ fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> 
     LaunchedEffect(passthrough) {
         if (passthrough) {
             controls = true
-            toaster.show(directMessage)
+            if (!youtubePlayback) toaster.show(directMessage)
         }
     }
     LaunchedEffect(failed) {
@@ -239,7 +251,14 @@ fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> 
         if (source != null) {
             key(source.url, retry) {
                 if (source.native) NativeStream(source.url, resumeAt, state, Modifier.fillMaxSize())
-                else EmbedStream(source.url, resumeAt, state, Modifier.fillMaxSize())
+                else EmbedStream(
+                    source.url,
+                    resumeAt,
+                    state,
+                    Modifier
+                        .fillMaxSize()
+                        .padding(start = if (youtubePlayback) RailWidth else 0.dp),
+                )
             }
         }
         AnimatedVisibility(
@@ -262,8 +281,15 @@ fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> 
                 .background(Color.Black.copy(alpha = dim))
         )
 
+        if (youtubeRail) {
+            PlayerRail(onBack, Modifier.align(Alignment.CenterStart)) {
+                if (hasEpisodes) RailAction(XIcons.Episodes, stringResource(R.string.tab_episodes)) { openPanel(PlayerPanel.Episodes) }
+                if (hasServers) RailAction(XIcons.Settings, stringResource(R.string.player_server)) { openPanel(PlayerPanel.Servers) }
+            }
+        }
+
         // Satu ketukan: tampil/sembunyi kontrol
-        Box(
+        if (!youtubeRail || panel != null) Box(
             (if (fullTouch) Modifier.fillMaxSize() else Modifier.fillMaxWidth().height(TopZone))
                 .pointerInput(state, fullTouch) {
                     detectTapGestures(
@@ -308,7 +334,7 @@ fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> 
                         buffered = state.buffered,
                         speedLabel = stringResource(R.string.player_speed, speedLabel(Speeds[speed])),
                         isSeries = hasEpisodes,
-                        hasNext = next != null,
+                        hasNext = next != null || nextSeason != null,
                         hasServers = hasServers,
                         onBack = onBack,
                         onTogglePlay = {
@@ -345,7 +371,10 @@ fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> 
                             toaster.show(audioMessage)
                             poke++
                         },
-                        onNext = { next?.let(::openEpisode) },
+                        onNext = {
+                            if (next != null) openEpisode(season, next)
+                            else if (nextSeason != null) openEpisode(nextSeason, 1)
+                        },
                     )
                 }
             }
@@ -388,13 +417,18 @@ fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> 
             exit = slideOutVertically(tween(Motion.Medium, easing = Motion.EmphasizedAccelerate)) { it } + fadeOut(),
         ) {
             when (lastPanel) {
-                PlayerPanel.Episodes -> EpisodePanel(
-                    episodes = episodes,
-                    current = episode,
-                    label = { episodeLabel(title, it) },
-                    onClose = { panel = null },
-                    onSelect = ::openEpisode,
-                )
+                PlayerPanel.Episodes -> key(panelSeason) {
+                    EpisodePanel(
+                        seasons = title.seasons,
+                        selectedSeason = panelSeason,
+                        onSeasonSelect = { panelSeason = it },
+                        episodes = title.seasons.getOrNull(panelSeason - 1)?.episodes.orEmpty(),
+                        current = if (panelSeason == season) episode else 0,
+                        label = { episodeLabel(title, it) },
+                        onClose = { panel = null },
+                        onSelect = { openEpisode(panelSeason, it) },
+                    )
+                }
                 PlayerPanel.Servers -> ServerPanel(
                     servers = sources.map { it.label },
                     current = server,
@@ -406,9 +440,13 @@ fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> 
     }
 }
 
-private suspend fun loadSources(id: String, episode: Int): List<StreamSource> {
+private suspend fun loadSources(id: String, season: Int, episode: Int): List<StreamSource> {
     val title = Catalog.ensureDetails(id)
-    val episodeId = title.seasons.firstOrNull()?.episodes?.getOrNull(episode - 1)?.remoteId
+    val episodeId = title.seasons.getOrNull(season - 1)?.episodes?.getOrNull(episode - 1)?.remoteId
+    if (title.remoteSource == "youtube") {
+        require(!episodeId.isNullOrBlank()) { "Episode YouTube belum tersedia." }
+        return listOf(youtubeSource(episodeId))
+    }
     val base = Catalog.detailPath(title)
     val path = when {
         title.remoteSource == "film" && title.kind == Kind.Series -> {
