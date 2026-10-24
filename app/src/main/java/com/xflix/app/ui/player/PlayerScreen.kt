@@ -9,12 +9,15 @@ import android.view.View
 import android.view.WindowManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -38,6 +41,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.changedToDown
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -132,6 +137,7 @@ fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> 
     val waiting = !failed && !state.started && !passthrough
     // YouTube: kontrol sendiri, tanpa timpaan
     val youtubeRail = youtubePlayback && passthrough && !failed
+    val railShown = youtubeRail && (controls || panel != null)
     val seasonText = stringResource(R.string.season_label, season)
     val subtitle = episodes.getOrNull(episode - 1)?.let {
         val label = episodeLabel(title, it)
@@ -174,8 +180,9 @@ fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> 
     }
 
     // Kontrol hilang sendiri
-    LaunchedEffect(controls, poke, state.playing, scrubbing, panel, passthrough) {
-        if (controls && state.playing && !passthrough && !scrubbing && panel == null) {
+    LaunchedEffect(controls, poke, state.playing, scrubbing, panel, passthrough, youtubeRail) {
+        val idle = youtubeRail || (state.playing && !passthrough)
+        if (controls && idle && !scrubbing && panel == null) {
             delay(3500)
             controls = false
         }
@@ -235,6 +242,8 @@ fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> 
         tween(Motion.Medium),
         label = "dim",
     )
+    // Video bergeser saat rel tampil
+    val railInset by animateDpAsState(if (railShown) RailWidth else 0.dp, tween(Motion.Medium), label = "rail")
     val quickActions: @Composable RowScope.() -> Unit = {
         if (hasServers) PlayerAction(XIcons.Settings, stringResource(R.string.player_server)) { openPanel(PlayerPanel.Servers) }
         if (hasEpisodes) PlayerAction(XIcons.Episodes, stringResource(R.string.tab_episodes)) { openPanel(PlayerPanel.Episodes) }
@@ -251,14 +260,17 @@ fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> 
         if (source != null) {
             key(source.url, retry) {
                 if (source.native) NativeStream(source.url, resumeAt, state, Modifier.fillMaxSize())
-                else EmbedStream(
-                    source.url,
-                    resumeAt,
-                    state,
+                else Box(
                     Modifier
                         .fillMaxSize()
-                        .padding(start = if (youtubePlayback) RailWidth else 0.dp),
-                )
+                        .padding(start = railInset)
+                        .onAnyTouch(youtubeRail) {
+                            controls = true
+                            poke++
+                        }
+                ) {
+                    EmbedStream(source.url, resumeAt, state, Modifier.fillMaxSize())
+                }
             }
         }
         AnimatedVisibility(
@@ -281,8 +293,13 @@ fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> 
                 .background(Color.Black.copy(alpha = dim))
         )
 
-        if (youtubeRail) {
-            PlayerRail(onBack, Modifier.align(Alignment.CenterStart)) {
+        AnimatedVisibility(
+            visible = railShown,
+            modifier = Modifier.align(Alignment.CenterStart),
+            enter = fadeIn(tween(Motion.Medium)) + slideInHorizontally(tween(Motion.Medium)) { -it / 2 },
+            exit = fadeOut(tween(Motion.Medium)) + slideOutHorizontally(tween(Motion.Medium)) { -it / 2 },
+        ) {
+            PlayerRail(onBack) {
                 if (hasEpisodes) RailAction(XIcons.Episodes, stringResource(R.string.tab_episodes)) { openPanel(PlayerPanel.Episodes) }
                 if (hasServers) RailAction(XIcons.Settings, stringResource(R.string.player_server)) { openPanel(PlayerPanel.Servers) }
             }
@@ -439,6 +456,18 @@ fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> 
         }
     }
 }
+
+/** Pantau sentuhan tanpa menahannya */
+private fun Modifier.onAnyTouch(enabled: Boolean, onTouch: () -> Unit): Modifier =
+    if (!enabled) this
+    else pointerInput(Unit) {
+        awaitPointerEventScope {
+            while (true) {
+                val event = awaitPointerEvent(PointerEventPass.Initial)
+                if (event.changes.any { it.changedToDown() }) onTouch()
+            }
+        }
+    }
 
 private suspend fun loadSources(id: String, season: Int, episode: Int): List<StreamSource> {
     val title = Catalog.ensureDetails(id)
