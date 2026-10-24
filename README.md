@@ -4,9 +4,9 @@
 
 <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=18&duration=3000&pause=1000&color=E50914&center=true&vCenter=true&width=640&lines=Nonton+gratis%2C+tanpa+langganan;Ringan%2C+cepat%2C+dan+bersih;Pasang%2C+pilih%2C+langsung+tonton" alt="Nonton gratis, tanpa langganan" />
 
-<a href="https://github.com/mrizky-fr/xflix-apps/raw/main/release/Xflix-Novaplay.apk"><img src="https://img.shields.io/badge/Download%20%26%20Install%20Now-APK%201.0.6-E50914?style=for-the-badge" alt="Download & Install Now" height="42" /></a>
+<a href="https://github.com/mrizky-fr/xflix-apps/raw/main/release/Xflix-Novaplay.apk"><img src="https://img.shields.io/badge/Download%20%26%20Install%20Now-APK%201.0.7-E50914?style=for-the-badge" alt="Download & Install Now" height="42" /></a>
 
-<sub>Android 8.0+ · ±3,7 MB · Gratis</sub>
+<sub>Android 8.0+ · ±4,6 MB · Gratis</sub>
 
 </div>
 
@@ -19,7 +19,7 @@ Setiap judul hadir dalam tampilan sinematis yang bersih: poster besar, deretan T
 - **Gratis**, tanpa langganan dan tanpa akun berbayar
 - **Selalu segar**, katalog diperbarui otomatis
 - **Pemutar layar penuh yang bersih**, tanpa tombol berantakan
-- **Ringan**, hanya ±3,7 MB karena video diputar langsung secara streaming
+- **Ringan**, hanya ±4,6 MB karena video diputar langsung secara streaming
 
 ## Pengalaman Menonton
 
@@ -60,7 +60,7 @@ Setiap judul hadir dalam tampilan sinematis yang bersih: poster besar, deretan T
 
 <div align="center">
 
-<a href="https://github.com/mrizky-fr/xflix-apps/raw/main/release/Xflix-Novaplay.apk"><img src="https://img.shields.io/badge/Download%20%26%20Install%20Now-APK%201.0.6-E50914?style=for-the-badge" alt="Download & Install Now" height="42" /></a>
+<a href="https://github.com/mrizky-fr/xflix-apps/raw/main/release/Xflix-Novaplay.apk"><img src="https://img.shields.io/badge/Download%20%26%20Install%20Now-APK%201.0.7-E50914?style=for-the-badge" alt="Download & Install Now" height="42" /></a>
 
 </div>
 
