@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:FF7A45,100:E50914&height=200&section=header&text=Xflix&fontColor=ffffff&fontSize=56&fontAlignY=36&desc=Streaming%20Android%20ala%20Netflix%20%C2%B7%20NOVA%20Play&descSize=18&descAlignY=58" alt="Xflix — Streaming Android ala Netflix · NOVA Play" width="100%" />
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:FF7A45,100:E50914&height=200&section=header&text=Xflix&fontColor=ffffff&fontSize=56&fontAlignY=36&desc=Streaming%20Film%2C%20Serial%20dan%20Anime%20%C2%B7%20NOVA%20Play&descSize=18&descAlignY=58" alt="Xflix — Streaming Film, Serial dan Anime · NOVA Play" width="100%" />
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=18&duration=3000&pause=1000&color=E50914&center=true&vCenter=true&width=640&lines=Film+%C2%B7+Serial+%C2%B7+Anime+%C2%B7+Donghua+%C2%B7+Dracin;Pemutar+ala+Netflix%3A+kunci%2C+kecepatan%2C+episode%2C+server;Kotlin+%C2%B7+Jetpack+Compose+%C2%B7+Media3+%C2%B7+WebView" alt="Film · Serial · Anime · Donghua · Dracin" />
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=18&duration=3000&pause=1000&color=E50914&center=true&vCenter=true&width=640&lines=Film+%C2%B7+Serial+%C2%B7+Anime+%C2%B7+Donghua+%C2%B7+Dracin;Pemutar+lengkap%3A+kunci%2C+kecepatan%2C+episode%2C+server;Kotlin+%C2%B7+Jetpack+Compose+%C2%B7+Media3+%C2%B7+WebView" alt="Film · Serial · Anime · Donghua · Dracin" />
 
 [![Versi](https://img.shields.io/badge/versi-1.0.3-E50914?style=flat-square)](#build)
 [![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=flat-square&logo=android&logoColor=white)](#build)
@@ -14,12 +14,12 @@
 
 ## Tentang
 
-**Xflix - Novaplay** adalah aplikasi streaming Android dengan pengalaman ala Netflix. Katalog dan pemutarnya diambil langsung dari API publik [NOVA Play](https://github.com/Lukman0521/nova-play), jadi APK tetap ringan (±3,7 MB) karena tidak membundel satu pun file video.
+**Xflix - Novaplay** adalah aplikasi streaming Android dengan tampilan sinematis yang bersih. Katalog dan pemutarnya diambil langsung dari API publik [NOVA Play](https://github.com/Lukman0521/nova-play), jadi APK tetap ringan (±3,7 MB) karena tidak membundel satu pun file video.
 
 Fokusnya ada di pengalaman menonton. Apa pun sumber videonya, entah embed pihak ketiga atau MP4/HLS langsung, penonton selalu memakai kontrol yang sama dan rapi milik Xflix, bukan kontrol bawaan masing-masing situs.
 
 - 🎬 Katalog film, serial, anime, donghua, dan dracin langsung dari NOVA Play
-- 🏠 Beranda ala Netflix: hero, Top 10, filter Serial · Film · Anime · Donghua, dan kategori
+- 🏠 Beranda sinematis: hero, Top 10, filter Serial · Film · Anime · Donghua, dan kategori
 - 🔎 Pencarian, Baru & Populer, Daftar Saya, serta pilihan profil penonton
 - ▶️ Pemutar landscape layar penuh dengan kontrol Xflix untuk semua sumber
 - 🔒 Kunci layar, kecepatan putar, maju/mundur 10 detik, dan ketuk dua kali untuk seek
@@ -27,7 +27,7 @@ Fokusnya ada di pengalaman menonton. Apa pun sumber videonya, entah embed pihak 
 
 ## Pemutar
 
-Pemutar meniru perilaku Netflix: satu ketukan hanya memunculkan atau menyembunyikan kontrol, dan video baru berhenti kalau tombol tengah ditekan.
+Pemutar dirancang supaya nyaman dipakai: satu ketukan hanya memunculkan atau menyembunyikan kontrol, dan video baru berhenti kalau tombol tengah ditekan.
 
 | Aksi | Hasil |
 | --- | --- |
@@ -88,7 +88,7 @@ Base URL produksi ada di `NovaApi.BASE` dalam [`Catalog.kt`](app/src/main/java/c
 | [`data/`](app/src/main/java/com/xflix/app/data) | Klien API NOVA Play dan model katalog |
 | [`ui/home`](app/src/main/java/com/xflix/app/ui/home), [`detail`](app/src/main/java/com/xflix/app/ui/detail), [`search`](app/src/main/java/com/xflix/app/ui/search), [`newhot`](app/src/main/java/com/xflix/app/ui/newhot), [`my`](app/src/main/java/com/xflix/app/ui/my), [`profiles`](app/src/main/java/com/xflix/app/ui/profiles) | Layar-layar aplikasi |
 | [`ui/player/PlayerScreen.kt`](app/src/main/java/com/xflix/app/ui/player/PlayerScreen.kt) | Layar pemutar: gesture, kunci, auto-hide, panel episode & server |
-| [`ui/player/PlayerControls.kt`](app/src/main/java/com/xflix/app/ui/player/PlayerControls.kt) | Komponen kontrol ala Netflix |
+| [`ui/player/PlayerControls.kt`](app/src/main/java/com/xflix/app/ui/player/PlayerControls.kt) | Komponen kontrol pemutar |
 | [`ui/player/StreamEngine.kt`](app/src/main/java/com/xflix/app/ui/player/StreamEngine.kt) | Mesin Media3 dan WebView beserta jembatannya |
 | [`assets/player_bridge.js`](app/src/main/assets/player_bridge.js) | Skrip pengendali video di dalam iframe |
 | [`ui/theme`](app/src/main/java/com/xflix/app/ui/theme) | Warna, tipografi, dan motion |
@@ -111,7 +111,6 @@ Untuk menandatangani APK rilis, salin [`keystore.properties.example`](keystore.p
 
 - Xflix tidak menyimpan atau meng-hosting video. Ketersediaan video, iklan, dan subtitle mengikuti sumber yang disediakan NOVA Play.
 - Iklan pre-roll yang diputar di dalam video embed tetap tampil karena bagian dari sumbernya.
-- Xflix adalah proyek pribadi dan tidak berafiliasi dengan Netflix.
 
 ## Pembuat
 

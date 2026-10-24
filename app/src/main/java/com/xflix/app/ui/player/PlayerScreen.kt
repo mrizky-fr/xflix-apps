@@ -70,7 +70,7 @@ private val TopZone = 76.dp
 
 private enum class PlayerPanel { Episodes, Servers }
 
-/** Pemutar streaming ala Netflix */
+/** Pemutar streaming Xflix */
 @Composable
 fun PlayerScreen(id: String, startSeason: Int, startEpisode: Int, onBack: () -> Unit) {
     val title = Catalog.title(id)

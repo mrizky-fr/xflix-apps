@@ -22,7 +22,7 @@ object XColors {
     val TextMuted = Color(0xFF808080)
     val TextDisabled = Color(0xFF595959)
 
-    // Oranye error ala Netflix
+    // Oranye untuk pesan error
     val Warning = Color(0xFFE87C03)
     val Positive = Color(0xFF46D369)
     val Download = Color(0xFF2E7BFF)
@@ -38,7 +38,7 @@ object Space {
     val xxl = 32.dp
 }
 
-// Lebih rapat dari Netflix
+// Ukuran dibuat lebih rapat
 object Dimens {
     val Gutter = 12.dp
     val RowGap = 18.dp
