@@ -9,7 +9,11 @@ import java.time.LocalDate
 
 enum class Kind { Movie, Series }
 
-enum class ContentCategory { Anime, Donghua }
+enum class ContentCategory(@param:StringRes val chip: Int, @param:StringRes val row: Int) {
+    Anime(R.string.chip_anime, R.string.row_anime),
+    Donghua(R.string.chip_donghua, R.string.row_donghua),
+    Kartun(R.string.chip_kartun, R.string.row_kartun),
+}
 
 // Gaya tipografi judul di poster
 enum class TitleStyle { Condensed, Serif, SerifItalic, Wide }

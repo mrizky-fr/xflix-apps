@@ -128,8 +128,7 @@ private fun buildRows(filter: HomeFilter, myList: List<String>): List<HomeRow> {
         HomeRow("top10", top10Label, RowType.Top10, Catalog.top10.filter(match)),
         HomeRow("originals", R.string.row_originals, RowType.Tall, pool.filter { it.original }),
         HomeRow("new", R.string.row_new, RowType.Poster, pool.sortedByDescending { it.year }.take(10)),
-        HomeRow("anime", R.string.row_anime, RowType.Poster, pool.filter { it.category == ContentCategory.Anime }),
-        HomeRow("donghua", R.string.row_donghua, RowType.Poster, pool.filter { it.category == ContentCategory.Donghua }),
+        *ContentCategory.entries.map { c -> HomeRow(c.name.lowercase(), c.row, RowType.Poster, pool.filter { it.category == c }) }.toTypedArray(),
         HomeRow("comedy", R.string.row_comedy, RowType.Poster, genres(Genre.Comedy)),
         HomeRow("horror", R.string.row_horror, RowType.Poster, genres(Genre.Horror)),
         HomeRow("thriller", R.string.row_thriller, RowType.Poster, genres(Genre.Thriller, Genre.Mystery)),
@@ -274,7 +273,7 @@ fun HomeScreen(
 
         // Hanya genre yang ada isinya
         val categories = ContentCategory.entries.filter { category -> Catalog.available.any { it.category == category } }
-        val categoryLabels = categories.map { stringResource(if (it == ContentCategory.Anime) R.string.chip_anime else R.string.chip_donghua) }
+        val categoryLabels = categories.map { stringResource(it.chip) }
         val genres = Genre.entries.filter { g -> Catalog.available.any { g in it.genres } }
         val genreLabels = genres.map { stringResource(it.label) }
         PickerOverlay(
@@ -553,7 +552,7 @@ private fun FilterChips(filter: HomeFilter, onFilter: (HomeFilter) -> Unit, onCa
                 exit = shrinkHorizontally(tween(Motion.Medium)) + fadeOut(),
             ) {
                 Chip(
-                    label = stringResource(if (category == ContentCategory.Anime) R.string.chip_anime else R.string.chip_donghua),
+                    label = stringResource(category.chip),
                     selected = filter.category == category,
                     onClick = { onFilter(filter.copy(kind = null, category = if (filter.category == category) null else category)) },
                 )

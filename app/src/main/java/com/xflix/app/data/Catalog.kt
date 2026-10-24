@@ -69,13 +69,14 @@ object Catalog {
 
     suspend fun refresh() {
         val data = NovaApi.get("/api/catalog")
+        val youtube = withContext(Dispatchers.IO) { YouTubeCatalog.titles }
         val all = buildList {
             data.optJSONArray("movies")?.objects()?.forEachIndexed { i, item -> add(fromRemote(item, "film", i)) }
             data.optJSONArray("dracin")?.objects()?.forEachIndexed { i, item -> add(fromRemote(item, "anime", i)) }
             data.optJSONArray("serials")?.objects()?.forEachIndexed { i, item -> add(fromRemote(item, "anime", i)) }
             data.optJSONArray("animeLibrary")?.objects()?.forEach { add(fromRemote(it, "anime", null)) }
             data.optJSONArray("donghuaLibrary")?.objects()?.forEach { add(fromRemote(it, "anime", null)) }
-            add(PzdCatalog.title)
+            addAll(youtube)
         }.distinctBy { it.id }
         if (all.isEmpty()) error("Katalog NOVA Play masih kosong.")
         titles.clear()
