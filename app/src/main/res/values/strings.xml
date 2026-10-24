@@ -180,7 +180,6 @@
     <string name="downloads_find_more">Cari Lagi untuk Didownload</string>
 
     <!-- Player -->
-    <string name="player_episode">M%1$d:E%2$d · %3$s</string>
     <string name="player_speed">Kecepatan (%1$s)</string>
     <string name="player_lock">Kunci</string>
     <string name="player_unlock">Ketuk untuk membuka kunci</string>
@@ -189,15 +188,15 @@
     <string name="player_rewind">Mundur 10 detik</string>
     <string name="player_forward">Maju 10 detik</string>
     <string name="player_seconds">%1$d detik</string>
-    <string name="player_missing_title">Video belum tersedia</string>
-    <string name="player_missing_body">Video episode ini belum ada di dalam aplikasi.</string>
+    <string name="player_server">Server</string>
+    <string name="player_choose_server">Pilih Server</string>
+    <string name="player_loading">Memuat video…</string>
     <string name="player_failed_title">Video tidak bisa diputar</string>
-    <string name="player_failed_body">File videonya rusak atau tidak bisa dibaca.</string>
-    <string name="player_offline_title">Butuh koneksi internet</string>
-    <string name="player_offline_body">Serial ini diputar langsung dari YouTube. Nyalakan data seluler atau Wi-Fi, video akan mulai otomatis.</string>
-    <string name="player_youtube_failed_body">Video ini tidak bisa diputar di dalam aplikasi.</string>
-    <string name="player_open_youtube">Buka di YouTube</string>
-    <string name="player_connection_lost">Koneksi terputus, menunggu internet…</string>
+    <string name="player_no_source">Sumber video belum tersedia untuk judul ini.</string>
+    <string name="player_stream_failed_body">Sumber video sedang bermasalah. Coba server lain atau ulangi sebentar lagi.</string>
+    <string name="player_retry">Coba lagi</string>
+    <string name="player_next_server">Coba server lain</string>
+    <string name="player_direct_hint">Ketuk video untuk memutar dari sumbernya</string>
     <string name="detail_streaming">Streaming dari NOVA Play · butuh internet</string>
     <string name="detail_streaming_offline">Sedang offline · video ini butuh internet</string>
 

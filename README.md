@@ -8,6 +8,8 @@ Aplikasi Android ini mengambil katalog dan pemutar dari API publik [NOVA Play](h
 
 APK tidak membundel file video. Embed ditampilkan dalam WebView; URL MP4/HLS langsung diputar dengan Media3. Ketersediaan video, iklan, dan subtitle mengikuti sumber yang disediakan NOVA Play.
 
+Kontrol pemutar (jeda, seek, kecepatan, kunci, episode, server) selalu milik Xflix. Untuk embed, `app/src/main/assets/player_bridge.js` disuntikkan ke semua frame lewat `androidx.webkit` untuk mengendalikan elemen `<video>` dan menyembunyikan UI bawaan sumber. Bila sumber tidak bisa dikendalikan dalam 10 detik (25 detik jika pemutarnya terdeteksi), layar jatuh ke kontrol bawaan sumber dan bar atas tetap tersedia.
+
 Build dengan JDK bawaan Android Studio:
 
 ```powershell

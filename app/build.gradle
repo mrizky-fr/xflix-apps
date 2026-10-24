@@ -77,6 +77,8 @@ dependencies {
     implementation "androidx.media3:media3-exoplayer:$media3_version"
     implementation "androidx.media3:media3-exoplayer-hls:$media3_version"
     implementation "androidx.media3:media3-ui:$media3_version"
+    // Kendali video di iframe
+    implementation 'androidx.webkit:webkit:1.15.0'
 
     testImplementation 'junit:junit:4.13.2'
 }
